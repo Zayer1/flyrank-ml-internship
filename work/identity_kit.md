@@ -1,7 +1,7 @@
 # Identity Kit
 
 ## Logo / Favicon
-![Zayer Monogram](z_monogram.png)
+![Terminal Prompt Logo](terminal_logo.png)
 
 ## Typography
 - **Heading Font:** `JetBrains Mono` (Geometric, monospaced, terminal aesthetic)
