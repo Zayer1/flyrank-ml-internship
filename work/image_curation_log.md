@@ -19,5 +19,7 @@ To properly showcase the NanoGPT (Nano-Llama) custom engine, my portfolio requir
     - **Option 2 (Rejected):** A pure `#171717` background with subtle `#2563EB` abstract structural nodes. (`hero_texture_opt2.png`)
 
 ## 3. The Rejection Note (Discernment)
+
 **Rejected Prompt:** *"A dark minimalist background. Pure #171717 color with subtle #2563EB abstract structural nodes. Clean and corporate."*
+
 **Why I rejected Option 2:** While the visual style and color palette matched the kit perfectly, the abstract nodes and connected lines looked too much like a generic "neural network" stock photo. It distracts from the actual technical diagrams in the portfolio. I chose Option 1 (Topographic) because it provides a quiet, ambient engineering texture without directly mimicking ML architecture, leaving the actual code and diagrams to be the loudest things on the page.
