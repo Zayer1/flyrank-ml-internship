@@ -1,7 +1,7 @@
 # Identity Kit
 
 ## Logo / Favicon
-![Doctor Dumbass Logo](doctor_dumbass_logo.png)
+![Zayer Monogram](z_monogram.png)
 
 ## Typography
 - **Heading Font:** `JetBrains Mono` (Geometric, monospaced, terminal aesthetic)
