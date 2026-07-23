@@ -125,12 +125,17 @@ clf.fit(X_train, y_train)
 ---
 
 ## Final Reusable Prompt
+
 **Context:** We are building a Supervised Scoring task to predict SEO traffic growth based on historical metrics. 
+
 **Goal:** Write a Python script to train the model and output actionable recommendations.
+
 **Constraints:** 
 1. Dataset is `content_refresh_anonymized.csv` (1 row = 1 page).
 2. The target is a binary indicator representing >80% growth.
 3. You MUST drop the `trend_direction` and `trend_pct` columns from the feature set to prevent data leakage. 
 4. Use a tree-based model restricted to `max_depth=4` to prevent overfitting.
+
 **Quality Criteria:** Evaluate the model exclusively using Precision at Top K (where K=50). Do not use global accuracy metrics.
+
 **Output Format:** Output the complete code in a single block. Ensure the script prints a formatted markdown table showing the Top 10 predicted page IDs and their growth probabilities for the editorial team.
