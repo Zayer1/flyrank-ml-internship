@@ -30,12 +30,12 @@ Keep this file open while you work.
 
 | Column | Type | Meaning | Notes |
 |---|---|---|---|
-| `search_volume` | number | Search-volume estimate for the page's target keyword | 0–74,000 in this slice; blank for 2,468 rows with no keyword data |
-| `competition` | number | Keyword competition score, 0–1 | Blank when no keyword data |
-| `competition_level` | category | `LOW` / `MEDIUM` / `HIGH` | Blank when no keyword data |
-| `cpc` | number | Cost-per-click estimate for the target keyword | Blank when no keyword data |
+| `search_volume` | number | Search-volume estimate for the page's target keyword | 0–74,000 in this slice; blank for 2,468 rows with no keyword data.<br>**Note:** Represents TAM (Total Addressable Market). High volume = massive potential but hard to rank for. |
+| `competition` | number | Keyword competition score, 0–1 | Blank when no keyword data.<br>**Note:** Density of active advertisers. `1.0` = cutthroat commercial space. `0.0` = nobody pays to advertise. |
+| `competition_level` | category | `LOW` / `MEDIUM` / `HIGH` | Blank when no keyword data.<br>**Note:** Natively provided by Google Ads API. Often used over the raw 0-1 score because the categorical bins are more stable and linear for models. |
+| `cpc` | number | Cost-per-click estimate for the target keyword | Blank when no keyword data.<br>**Note:** Literal dollar amount paid per ad click. High CPC ($15+) = highly lucrative topic. |
 | `content_type` | category | `keyword article` / `feedly article` / `comparison article` | |
-| `main_intent` | category | `informational` / `transactional` / `commercial` / `navigational` | Blank when unknown |
+| `main_intent` | category | `informational` / `transactional` / `commercial` / `navigational` | Blank when unknown.<br>**Note:** Algorithmic classification of user psychology (e.g., Informational = wants to read a blog; Transactional = wants to buy a product). |
 
 ## Content properties
 
@@ -45,8 +45,8 @@ Keep this file open while you work.
 | `char_count` | number | Article character count | Blank alongside `word_count` |
 | `provider_used` | category | LLM provider that generated the article: `openai` / `google` / `other` | Blank when unknown. Not a model feature |
 | `model_used` | category | LLM model name (e.g. `gemini-2.5-flash`, `gpt-4o-mini`) | Blank/`unknown` when not recorded. Not a model feature |
-| `content_age_days` | number | Days since the content was created | Every row in this slice is ≥ 90 |
-| `days_since_last_update` | number | Days since the content was last updated | |
+| `content_age_days` | number | Days since the content was created | Every row in this slice is ≥ 90.<br>**Note:** Older pages accumulate trust/backlinks over time, but are highly susceptible to "content decay" as facts go stale. |
+| `days_since_last_update` | number | Days since the content was last updated | **Note:** Freshness signal. Google heavily rewards recently updated content. |
 
 ## 90-day activity totals (GSC = Google Search Console, GA4 = Google Analytics)
 
@@ -78,11 +78,11 @@ Keep this file open while you work.
 
 | Column | Formula | Notes |
 |---|---|---|
-| `ctr` | `clicks_90d / impressions_90d × 100` | 2 decimals. `0.76` = 0.76% |
-| `avg_position` | mean GSC position over the window | 1 decimal. Lower is better. **`0` means "no position data", not position zero** (1,205 rows) |
-| `engagement_rate` | `engaged_sessions_90d / sessions_90d × 100` | 0–100 |
-| `scroll_rate` | `scroll_events_90d / pageviews_90d × 100` | **Can exceed 100** (multiple scroll events per pageview); blank when `pageviews_90d = 0` |
-| `ai_traffic_pct` | `ai_sessions_90d / sessions_90d × 100` | **Can exceed 100** (AI-referred sessions are measured independently of total GA4 sessions) |
+| `ctr` | `clicks_90d / impressions_90d × 100` | 2 decimals. `0.76` = 0.76%.<br>**Note:** High CTR = highly relevant, enticing title. |
+| `avg_position` | mean GSC position over the window | 1 decimal. Lower is better. **`0` means "no position data", not position zero** (1,205 rows).<br>**Note:** Average Google rank (1-3 is prime traffic, 11+ is dead page 2). |
+| `engagement_rate` | `engaged_sessions_90d / sessions_90d × 100` | 0–100.<br>**Note:** Did they stay >10 seconds? Low rate = they hated the content and bounced immediately. |
+| `scroll_rate` | `scroll_events_90d / pageviews_90d × 100` | **Can exceed 100** (multiple scroll events per pageview); blank when `pageviews_90d = 0`.<br>**Note:** Did they actually read to the bottom? |
+| `ai_traffic_pct` | `ai_sessions_90d / sessions_90d × 100` | **Can exceed 100** (AI-referred sessions are measured independently of total GA4 sessions).<br>**Note:** Clicks coming specifically from AI chatbots (like ChatGPT citations). |
 | `trend_pct` | `(impressions_last_30d − impressions_prev_30d) / impressions_prev_30d × 100` | 1 decimal. Blank when `impressions_prev_30d = 0` (3,388 rows; the prep step fills blanks with 0). **Label source — never a feature** |
 
 ## Buckets / tiers (transparent, threshold-based)
