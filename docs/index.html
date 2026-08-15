@@ -52,12 +52,18 @@
 
 <p>We utilized the 30k-row anonymized starter slice from <code>content_refresh_anonymized.csv</code> spanning March 2026. We focused strictly on the core features present in the dataset. We utilized a dataset of ~30,000 URLs.</p>
 <h2 id="sec-3">3. Methodology</h2>
-
-<p>We transitioned from linear heuristics to a non-linear XGBoost architecture. To prevent time-travel leakage (e.g., predicting on future states like <code>engagement_rate_90d</code>) and domain memorization, we deployed a strict <code>GroupShuffleSplit</code> on <code>client_id</code>.</p>
+<p>We framed this as a supervised binary classification task: predicting <code>is_declining_label</code> (derived from <code>trend_direction == 'down'</code>).</p>
+<ul>
+<li><strong>Class Balance:</strong> The target label is naturally balanced (54.2% declining), so no synthetic oversampling (SMOTE) or class weighting was necessary.</li>
+<li><strong>Validation Strategy (Grouped Split):</strong> To prevent the model from memorizing client-specific domains, we used <code>GroupShuffleSplit</code> on <code>client_id</code> (test_size=0.2). Out of 32 total clients, each fold isolates ~7 distinct clients in the test set, completely preventing cross-domain leakage.</li>
+<li><strong>Model &amp; Hyperparameters:</strong> We trained an XGBoost classifier with <code>enable_categorical=True</code> to natively handle NaNs without imputation. Hyperparameters were tuned via <code>GridSearchCV</code> (searching <code>max_depth</code> and <code>n_estimators</code>) using an inner <code>GroupKFold(n_splits=2)</code>.</li>
+</ul>
 <h2 id="sec-4">4. Results</h2>
 
 <p>The XGBoost model consistently outperformed the legacy heuristic model and a feature-equivalent Logistic Regression baseline across a repeated grouped, client-level holdout validation. We measured clear improvements in Precision@50, validating the decision to deploy an ML triage engine over static heuristic rules. </p>
 
+<p><strong>The Non-Linear Advantage:</strong> XGBoost outperforms the Logistic Regression baseline by a staggering ~49 points. A linear model fundamentally struggles here because SEO decay is highly non-linear and interactive. For example, a linear model might learn "high traffic = decay" or "young age = decay." But XGBoost can learn the <em>intersection</em>: a 2-day-old article with massive traffic is likely a viral spike destined to crash, whereas a 3-year-old article with massive traffic is a stable evergreen pillar. XGBoost captures these complex interactions natively, whereas LogReg requires manual feature crosses to even see them.</p>
+<p><strong>Recall Framing:</strong> While 2.92% global recall appears low, it is an artifact of the strict 50-page editorial capacity limit constraint. What this number actually proves is that we are successfully packing the limited 50-page bandwidth with highly accurate candidates, concentrating true positives at a vastly higher density than random chance or legacy heuristics.</p>
 <h2 id="sec-5">5. Limitations</h2>
 
 <ul>
@@ -70,7 +76,12 @@
 <li>
 <p><strong>Sample Size vs Warehouse:</strong> This model was trained on a 30,000-row sample, whereas the full production data warehouse contains ~79M rows. The extreme P@50 lift observed here may compress or revert to the mean when scaled to the full dataset.</p>
 </li>
-<li><strong>Third-Party AI Data Leaks:</strong> The Action Playbook currently passes parsed DataFrame contents to the Groq LLaMA 3.1 Copilot. In production, feeding non-anonymized client traffic data into external AI APIs is a strict violation of data privacy policies. A localized LLM or strict PII redaction layer is required before full deployment.</li>
+<li>
+<p><strong>Third-Party AI Data Leaks:</strong> The Action Playbook currently passes parsed DataFrame contents to the Groq LLaMA 3.1 Copilot. In production, feeding non-anonymized client traffic data into external AI APIs is a strict violation of data privacy policies. A localized LLM or strict PII redaction layer is required before full deployment.</p>
+</li>
+<li>
+<p><strong>Effective N of Generalization:</strong> While the dataset contains 30,000 rows, there are only 32 distinct clients. A 20% group holdout means our test set is only evaluated on ~7 distinct clients per fold. The tight ±2.8% confidence interval on our P@50 might be overly optimistic due to the small effective N of groups.</p>
+</li>
 </ul>
 <h2 id="sec-6">6. Recommendations</h2>
 
