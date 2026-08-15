@@ -56,7 +56,7 @@
 <p>We transitioned from linear heuristics to a non-linear XGBoost architecture. To prevent time-travel leakage (e.g., predicting on future states like <code>engagement_rate_90d</code>) and domain memorization, we deployed a strict <code>GroupShuffleSplit</code> on <code>client_id</code>.</p>
 <h2 id="sec-4">4. Results</h2>
 
-<p>The XGBoost model consistently outperformed the legacy heuristic model and a feature-equivalent Logistic Regression baseline across a repeated 5-seed random holdout validation. We measured clear improvements in Precision@50, validating the decision to deploy an ML triage engine over static heuristic rules. </p>
+<p>The XGBoost model consistently outperformed the legacy heuristic model and a feature-equivalent Logistic Regression baseline across a repeated grouped, client-level holdout validation. We measured clear improvements in Precision@50, validating the decision to deploy an ML triage engine over static heuristic rules. </p>
 
 <h2 id="sec-5">5. Limitations</h2>
 
@@ -81,7 +81,7 @@
 <p>Our artifacts include the live, interactive web application (Triage Engine) deployed natively in the browser, featuring a drag-and-drop CSV parser and an integrated Groq LLaMA 3.1 Copilot.</p>
 <p><strong>Deployed Application:</strong>
 <a href="https://zayer1.github.io/flyrank-ml-internship/">Launch the Live Web App &amp; LLaMA Copilot</a></p>
-<p><strong>Probability Distribution:</strong> The right-skewed histogram reflects the business reality that severe decay is relatively rare. The vast majority of pages are correctly scored as stable or low-risk, preventing the editorial team from being flooded with false alarms.</p>
+<p><strong>Probability Distribution:</strong> The right-skewed histogram reflects the business reality that severe decay is relatively rare. A strict quantitative check of the test set confirms this: only a very small fraction of pages breach the &gt;0.70 Urgent threshold, and a slightly larger minority breach the &gt;0.40 Standard threshold, preventing the editorial team from being flooded with false alarms.</p>
 <h2 id="sec-8">8. Acknowledgments</h2>
 <p>All dataset structures and theoretical bounds provided by the FlyRank Machine Learning Internship (https://flyrank.ai).</p>
 </div>
