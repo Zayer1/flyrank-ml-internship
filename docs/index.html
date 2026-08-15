@@ -42,9 +42,11 @@
                     
                     <div class="paper-body">
 <h2 id="abstract">Abstract</h2>
-<p>This research analyzes the <code>content_refresh_anonymized.csv</code> dataset to construct an ML triage engine capable of predicting SEO traffic decay before it happens. By transitioning from legacy linear heuristics to a non-linear XGBoost classifier, we consistently improve the accuracy of prioritizing content for our editorial team. The model achieves stable performance across a repeated 5-seed random holdout validation, and is deployed as a live interactive web app for end-users.</p>
+<p>This research analyzes the <code>content_refresh_anonymized.csv</code> dataset to construct an ML triage engine capable of predicting SEO traffic decay before it happens. By transitioning from legacy linear heuristics to a non-linear XGBoost classifier, we consistently improve the accuracy of prioritizing content for our editorial team. The model achieves stable performance across a repeated 5-seed grouped, client-level holdout validation, and is deployed as a live interactive web app for end-users.</p>
 <h2 id="sec-1">1. Question</h2>
 
+<p><strong>Who acts on this?</strong> The Editorial Content Team.
+<strong>Cost of a missed decline:</strong> Irrecoverable traffic loss as content falls out of the top 10 search results, and wasted editor hours spent manually triaging content that didn't need updates.</p>
 <p>Can we predict SEO traffic decay for all content across our portfolio before it loses significant rank, using structural and behavioral signals instead of arbitrary calendar heuristic rules? This supports the business decision of building a proactive 'Action Playbook' to trigger content refreshes for clients.</p>
 <h2 id="sec-2">2. Data</h2>
 
@@ -73,11 +75,13 @@
 <li><strong>Stable / No Action:</strong> Zero-traffic content or stable low-probability content (Prob &lt;= 0.4).</li>
 </ol>
 
+
 <h2 id="sec-7">7. Artifacts</h2>
 
 <p>Our artifacts include the live, interactive web application (Triage Engine) deployed natively in the browser, featuring a drag-and-drop CSV parser and an integrated Groq LLaMA 3.1 Copilot.</p>
 <p><strong>Deployed Application:</strong>
 <a href="https://zayer1.github.io/flyrank-ml-internship/">Launch the Live Web App &amp; LLaMA Copilot</a></p>
+<p><strong>Probability Distribution:</strong> The right-skewed histogram reflects the business reality that severe decay is relatively rare. The vast majority of pages are correctly scored as stable or low-risk, preventing the editorial team from being flooded with false alarms.</p>
 <h2 id="sec-8">8. Acknowledgments</h2>
 <p>All dataset structures and theoretical bounds provided by the FlyRank Machine Learning Internship (https://flyrank.ai).</p>
 </div>
