@@ -59,6 +59,8 @@
 <ul>
 <li><strong>Heavy Feature Dependency:</strong> The model relies heavily on <code>impressions_prev_30d</code> and other traffic shapes, meaning entirely new URLs without 30 days of history cannot be accurately scored.</li>
 <li><strong>Label Definition Flaws:</strong> The label <code>trend_direction == 'down'</code> is a binary proxy. As discovered in Week 6, binary proxy labels can sometimes mask the true magnitude of decay, leading to edge cases where slow-burn decay is missed.</li>
+<li><strong>Evaluation Variance:</strong> The headline evaluation metrics are derived from a single <code>GroupShuffleSplit</code> on 7 held-out clients. While sufficient to prove superiority over the heuristic baseline, k-fold cross-validation would be required to rule out sensitivity to this specific test split.</li>
+<li><strong>Action Granularity Loss:</strong> For operational simplicity, truly dead pages (zero traffic) and stable low-probability pages were collapsed into a single "Stable / No Action" label. This intentionally trades analytical granularity for workflow simplicity.</li>
 </ul>
 <h2 id="sec-6">6. Recommendations</h2>
 
