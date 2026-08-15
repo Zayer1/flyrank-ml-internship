@@ -43,10 +43,10 @@
                     <div class="paper-body">
 <h2 id="sec-1">1. Question</h2>
 
-<p>Can we predict SEO traffic decay for mature content (age &gt; 365 days) before it loses significant rank, using structural and behavioral signals instead of arbitrary calendar heuristic rules? This supports the business decision of building a proactive 'Action Playbook' to trigger content refreshes for clients.</p>
+<p>Can we predict SEO traffic decay for all content across our portfolio before it loses significant rank, using structural and behavioral signals instead of arbitrary calendar heuristic rules? This supports the business decision of building a proactive 'Action Playbook' to trigger content refreshes for clients.</p>
 <h2 id="sec-2">2. Data</h2>
 
-<p>We utilized the full release from <code>content_refresh_anonymized.csv</code> spanning March 2026. We excluded rows where <code>ga4_data_available</code> or <code>gsc_data_available</code> were false to avoid structural zeros. We utilized a dataset of ~30,000 URLs.</p>
+<p>We utilized the full release from <code>content_refresh_anonymized.csv</code> spanning March 2026. We focused strictly on the core features present in the dataset. We utilized a dataset of ~30,000 URLs.</p>
 <h2 id="sec-3">3. Methodology</h2>
 
 <p>We transitioned from linear heuristics to a non-linear XGBoost architecture. To prevent time-travel leakage (e.g., predicting on future states like <code>engagement_rate_90d</code>) and domain memorization, we deployed a strict <code>GroupShuffleSplit</code> on <code>client_id</code>.</p>
@@ -71,6 +71,7 @@
 <h2 id="sec-7">7. Artifacts</h2>
 
 <p>Our artifacts include the live, interactive web application (Triage Engine) deployed natively in the browser, featuring a drag-and-drop CSV parser and an integrated Groq LLaMA 3.1 Copilot.</p>
+<p><img alt="Probability Distribution" src="prob_dist.png" /></p>
 <h2 id="sec-8">8. Acknowledgments</h2>
 <p>All dataset structures and theoretical bounds provided by the FlyRank Machine Learning Internship (https://flyrank.ai).</p>
 </div>

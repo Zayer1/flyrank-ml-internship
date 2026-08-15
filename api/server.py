@@ -90,7 +90,12 @@ async def score_data(file: UploadFile = File(...)):
         row = df.iloc[index]
         
         # Action Playbook Rules
-        if prob > 0.7:
+        impressions = row.get('impressions_prev_30d', 0)
+        search_volume = row.get('search_volume', 0)
+        
+        if impressions == 0:
+            action = "Basement Trap"
+        elif prob > 0.7 and search_volume > 100:
             action = "Urgent Refresh"
         elif prob > 0.4:
             action = "Standard Review"
