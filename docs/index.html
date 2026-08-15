@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlyRank Capstone: Predictive Triage Engine</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <!-- SIDEBAR -->
+        <nav class="sidebar glass-panel">
+            <h2>FlyRank ML-11</h2>
+            <div class="nav-links">
+                <button class="nav-btn active" data-target="paper-view">Research Paper</button>
+                <button class="nav-btn premium-btn" data-target="engine-view">Live Engine</button>
+            </div>
+            <div class="paper-nav" id="paper-toc">
+                <h3>Contents</h3>
+                <ul>
+                    <li><a href="#sec-1">1. Question</a></li>
+                    <li><a href="#sec-2">2. Data</a></li>
+                    <li><a href="#sec-3">3. Methodology</a></li>
+                    <li><a href="#sec-4">4. Results</a></li>
+                    <li><a href="#sec-5">5. Limitations</a></li>
+                    <li><a href="#sec-6">6. Recommendations</a></li>
+                    <li><a href="#sec-7">7. Artifacts</a></li>
+                    <li><a href="#sec-8">8. Acknowledgments</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="main-content">
+            
+            <!-- PAPER VIEW -->
+            <section id="paper-view" class="view-section active">
+                <div class="content-wrapper glass-panel">
+                    <h1 class="paper-title">Predicting SEO Traffic Decay: A Non-Linear Approach to Content Triage</h1>
+                    <div class="author-block">By Zayer | FlyRank Internship Capstone</div>
+                    
+                    <div class="paper-body">
+<h2 id="sec-1">1. Question</h2>
+
+<p>Can we predict SEO traffic decay for mature content (age &gt; 365 days) before it loses significant rank, using structural and behavioral signals instead of arbitrary calendar heuristic rules? This supports the business decision of building a proactive 'Action Playbook' to trigger content refreshes for clients.</p>
+<h2 id="sec-2">2. Data</h2>
+
+<p>We utilized the full release from <code>content_refresh_anonymized.csv</code> spanning March 2026. We excluded rows where <code>ga4_data_available</code> or <code>gsc_data_available</code> were false to avoid structural zeros. We utilized a dataset of ~30,000 URLs.</p>
+<h2 id="sec-3">3. Methodology</h2>
+
+<p>We transitioned from linear heuristics to a non-linear XGBoost architecture. To prevent time-travel leakage (e.g., predicting on future states like <code>engagement_rate_90d</code>) and domain memorization, we deployed a strict <code>GroupShuffleSplit</code> on <code>client_id</code>.</p>
+<h2 id="sec-4">4. Results</h2>
+
+<p>The non-linear XGBoost model mathematically outperformed legacy heuristic models on the exact same test splits. We measured significant improvements in Precision@50 and Global Recall, validating the decision to deploy an ML triage engine over static heuristic rules.</p>
+<h2 id="sec-5">5. Limitations</h2>
+
+<p>This model assumes historical decay patterns remain consistent. It cannot account for sudden, massive algorithmic updates from search engines (e.g., Google Core Updates) that fundamentally shift ranking weights overnight.</p>
+<ul>
+<li><strong>Heavy Feature Dependency:</strong> The model relies heavily on <code>impressions_prev_30d</code> and other traffic shapes, meaning entirely new URLs without 30 days of history cannot be accurately scored.</li>
+<li><strong>Label Definition Flaws:</strong> The label <code>trend_direction == 'down'</code> is a binary proxy. As discovered in Week 6, binary proxy labels can sometimes mask the true magnitude of decay, leading to edge cases where slow-burn decay is missed.</li>
+</ul>
+<h2 id="sec-6">6. Recommendations</h2>
+
+<p>The output of the model feeds a discrete Action Playbook:</p>
+<ol>
+<li><strong>Urgent Refresh:</strong> (Prob &gt; 0.7) Immediate content update required.</li>
+<li><strong>Standard Review:</strong> (Prob 0.4 - 0.7) Queue for regular audit.</li>
+<li><strong>Basement Trap:</strong> (Prob &lt; 0.4) Ignore, content is permanently stabilized or dead.</li>
+</ol>
+<h2 id="sec-7">7. Artifacts</h2>
+
+<p>Our artifacts include the live, interactive web application (Triage Engine) deployed natively in the browser, featuring a drag-and-drop CSV parser and an integrated Groq LLaMA 3.1 Copilot.</p>
+<h2 id="sec-8">8. Acknowledgments</h2>
+<p>All dataset structures and theoretical bounds provided by the FlyRank Machine Learning Internship (https://flyrank.ai).</p>
+</div>
+                </div>
+            </section>
+
+            <!-- ENGINE VIEW (THE APP) -->
+            <section id="engine-view" class="view-section hidden">
+                <div class="engine-grid">
+                    
+                    <!-- Uploader Panel -->
+                    <div class="upload-panel glass-panel">
+                        <h2>Triage Engine</h2>
+                        <p>Upload a CSV to score URLs against the XGBoost logic.</p>
+                        <div class="drop-zone" id="drop-zone">
+                            <p id="upload-status">Drag & Drop CSV Here</p>
+                            <input type="file" id="file-input" accept=".csv" hidden>
+                            <button id="browse-btn" class="action-btn">Browse Files</button>
+                        </div>
+                    </div>
+
+                    <!-- Results Panel -->
+                    <div class="results-panel glass-panel">
+                        <h2>Live Queue</h2>
+                        <div class="table-container">
+                            <table id="results-table">
+                                <thead>
+                                    <tr>
+                                        <th>URL ID</th>
+                                        <th>Decay Prob</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="results-body">
+                                    <tr><td colspan="3" class="empty-state">Waiting for data...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Chatbot Panel -->
+                    <div class="chat-panel glass-panel">
+                        <h2>Data Analyst Helper</h2>
+                        <div class="chat-history" id="chat-history">
+                            <div class="chat-msg system">Helper: Upload a CSV, then ask me questions about the queue.</div>
+                        </div>
+                        <div class="chat-input-area">
+                            <input type="text" id="chat-input" placeholder="Ask about the data...">
+                            <button id="send-chat" class="action-btn">Send</button>
+                            <button id="export-chat" class="action-btn" style="background: rgba(255,255,255,0.1); color: white;">Export</button>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="app.js?v=3"></script>
+</body>
+</html>
