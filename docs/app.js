@@ -1,7 +1,6 @@
 // API Base URL (Dynamic for localhost, file://, vs deployment)
-const API_BASE = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname === "") 
-    ? "http://127.0.0.1:8000/api" 
-    : "https://api.flyrank.com/api";
+const IS_LOCAL = (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1" || window.location.hostname === "");
+const API_BASE = IS_LOCAL ? "http://127.0.0.1:8000/api" : "https://api.flyrank.com/api";
 
 // Global state to store the current queue for context
 let currentQueueContext = "No data uploaded yet.";
@@ -64,6 +63,11 @@ fileInput.addEventListener('change', (e) => {
 async function handleFileUpload(file) {
     if (!file.name.endsWith('.csv')) {
         alert("Please upload a CSV file.");
+        return;
+    }
+    
+    if (!IS_LOCAL) {
+        alert("Live Engine requires the local backend API to score files. Please clone the repository and run `python api/server.py` to use this feature.");
         return;
     }
 

@@ -55,13 +55,10 @@ async def score_data(file: UploadFile = File(...)):
         raise HTTPException(status_code=500, detail=f"Error loading model. Did you run the capstone notebook? Details: {str(e)}")
         
     # Preprocess incoming CSV (Identical to training pipeline)
-    DROP_FOR_TRAIN = [
-        'client_id', 'content_id', 'trend_direction', 'trend_pct', 'is_declining_label',
-        'impressions_last_30d', 'clicks_last_30d', 'sessions_last_30d',
-        'impressions_90d', 'clicks_90d', 'pageviews_90d', 'sessions_90d', 
-        'users_90d', 'engaged_sessions_90d', 'ai_sessions_90d', 'scroll_events_90d',
-        'ctr', 'avg_position', 'engagement_rate', 'scroll_rate', 'ai_traffic_pct', 'impression_tier'
-    ]
+    config_path = os.path.join(os.path.dirname(__file__), '..', 'config.json')
+    with open(config_path, 'r') as f:
+        config = json.load(f)
+    DROP_FOR_TRAIN = config.get("DROP_FOR_TRAIN", [])
     cols_to_drop = [c for c in DROP_FOR_TRAIN if c in df.columns]
     X_score = df.drop(columns=cols_to_drop)
 
