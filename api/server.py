@@ -100,7 +100,7 @@ async def score_data(file: UploadFile = File(...)):
         elif prob > 0.4:
             action = "Standard Review"
         else:
-            action = "Basement Trap"
+            action = "Stable / No Action"
             
         # Try to find a good ID column
         url_id = row.get("url_id", row.get("content_id", f"url_{index}"))
