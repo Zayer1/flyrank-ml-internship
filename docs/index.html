@@ -42,7 +42,7 @@
                     
                     <div class="paper-body">
 <h2 id="abstract">Abstract</h2>
-<p>This research analyzes the <code>content_refresh_anonymized.csv</code> dataset to construct an ML triage engine capable of predicting SEO traffic decay before it happens. By transitioning from legacy linear heuristics to a non-linear XGBoost classifier, we vastly improve the accuracy of prioritizing content for our editorial team. The model achieves robust performance across a 5-seed cross-client holdout validation, and is deployed as a live interactive web app for end-users.</p>
+<p>This research analyzes the <code>content_refresh_anonymized.csv</code> dataset to construct an ML triage engine capable of predicting SEO traffic decay before it happens. By transitioning from legacy linear heuristics to a non-linear XGBoost classifier, we consistently improve the accuracy of prioritizing content for our editorial team. The model achieves stable performance across a repeated 5-seed random holdout validation, and is deployed as a live interactive web app for end-users.</p>
 <h2 id="sec-1">1. Question</h2>
 
 <p>Can we predict SEO traffic decay for all content across our portfolio before it loses significant rank, using structural and behavioral signals instead of arbitrary calendar heuristic rules? This supports the business decision of building a proactive 'Action Playbook' to trigger content refreshes for clients.</p>
@@ -54,12 +54,15 @@
 <p>We transitioned from linear heuristics to a non-linear XGBoost architecture. To prevent time-travel leakage (e.g., predicting on future states like <code>engagement_rate_90d</code>) and domain memorization, we deployed a strict <code>GroupShuffleSplit</code> on <code>client_id</code>.</p>
 <h2 id="sec-4">4. Results</h2>
 
-<p>The non-linear XGBoost model mathematically outperformed legacy heuristic models across a robust 5-seed GroupShuffleSplit validation suite. We measured significant improvements in Precision@50 and Global Recall, validating the decision to deploy an ML triage engine over static heuristic rules.</p>
+<p>The XGBoost model consistently outperformed the legacy heuristic model and a feature-equivalent Logistic Regression baseline across a repeated 5-seed random holdout validation. We measured clear improvements in Precision@50, validating the decision to deploy an ML triage engine over static heuristic rules. </p>
+
 <h2 id="sec-5">5. Limitations</h2>
 
 <ul>
 <li><strong>Heavy Feature Dependency:</strong> The model relies heavily on <code>impressions_prev_30d</code> and other traffic shapes, meaning entirely new URLs without 30 days of history cannot be accurately scored.</li>
 <li><strong>Label Definition Flaws:</strong> The label <code>trend_direction == 'down'</code> is a binary proxy. As discovered in Week 6, binary proxy labels can sometimes mask the true magnitude of decay, leading to edge cases where slow-burn decay is missed.</li>
+<li><strong>Label Binning:</strong> The binary label forces 'new' pages (which naturally have low traffic) into the 'not declining' bucket, creating edge-case noise.</li>
+<li><strong>Missingness Exploitation:</strong> <code>provider_used</code> is highly important but 71% missing. XGBoost may be exploiting the missingness pattern itself rather than true signal from the feature.</li>
 </ul>
 <h2 id="sec-6">6. Recommendations</h2>
 
