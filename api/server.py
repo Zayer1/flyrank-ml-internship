@@ -94,7 +94,7 @@ async def score_data(file: UploadFile = File(...)):
         search_volume = row.get('search_volume', 0)
         
         if impressions == 0:
-            action = "Basement Trap"
+            action = "Stable / No Action"
         elif prob > 0.7 and search_volume > 100:
             action = "Urgent Refresh"
         elif prob > 0.4:

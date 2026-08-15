@@ -64,9 +64,9 @@
 
 <p>The output of the model feeds a discrete Action Playbook:</p>
 <ol>
-<li><strong>Urgent Refresh:</strong> (Prob &gt; 0.7) Immediate content update required.</li>
-<li><strong>Standard Review:</strong> (Prob 0.4 - 0.7) Queue for regular audit.</li>
-<li><strong>Basement Trap:</strong> (Prob &lt; 0.4) Ignore, content is permanently stabilized or dead.</li>
+<li><strong>Urgent Refresh:</strong> (Prob &gt; 0.7 AND Search Volume &gt; 100) Immediate content update required for high-value targets.</li>
+<li><strong>Standard Review:</strong> (Prob &gt; 0.4) Queue for regular audit (includes high-probability pages with low search volume).</li>
+<li><strong>Stable / No Action:</strong> Zero-traffic content or stable low-probability content (Prob &lt;= 0.4).</li>
 </ol>
 <h2 id="sec-7">7. Artifacts</h2>
 
