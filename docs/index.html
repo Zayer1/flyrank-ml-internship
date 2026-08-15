@@ -41,24 +41,26 @@
                     <div class="author-block">By Zayer | FlyRank Internship Capstone</div>
                     
                     <div class="paper-body">
+<h2 id="abstract">Abstract</h2>
+<p>This research analyzes the <code>content_refresh_anonymized.csv</code> dataset to construct an ML triage engine capable of predicting SEO traffic decay before it happens. By transitioning from legacy linear heuristics to a non-linear XGBoost classifier, we vastly improve the accuracy of prioritizing content for our editorial team. The model achieves robust performance across a 5-seed cross-client holdout validation, and is deployed as a live interactive web app for end-users.</p>
 <h2 id="sec-1">1. Question</h2>
 
 <p>Can we predict SEO traffic decay for all content across our portfolio before it loses significant rank, using structural and behavioral signals instead of arbitrary calendar heuristic rules? This supports the business decision of building a proactive 'Action Playbook' to trigger content refreshes for clients.</p>
 <h2 id="sec-2">2. Data</h2>
 
-<p>We utilized the full release from <code>content_refresh_anonymized.csv</code> spanning March 2026. We focused strictly on the core features present in the dataset. We utilized a dataset of ~30,000 URLs.</p>
+<p>We utilized the 30k-row anonymized starter slice from <code>content_refresh_anonymized.csv</code> spanning March 2026. We focused strictly on the core features present in the dataset. We utilized a dataset of ~30,000 URLs.</p>
 <h2 id="sec-3">3. Methodology</h2>
 
 <p>We transitioned from linear heuristics to a non-linear XGBoost architecture. To prevent time-travel leakage (e.g., predicting on future states like <code>engagement_rate_90d</code>) and domain memorization, we deployed a strict <code>GroupShuffleSplit</code> on <code>client_id</code>.</p>
 <h2 id="sec-4">4. Results</h2>
 
-<p>The non-linear XGBoost model mathematically outperformed legacy heuristic models across a robust 5-fold cross-validation suite. We measured significant improvements in Precision@50 and Global Recall, validating the decision to deploy an ML triage engine over static heuristic rules.</p>
-<p>importances = pd.DataFrame({
-    'feature': X_train.columns,
-    'importance': final_model.feature_importances_
-}).sort_values('importance', ascending=False)
-print("Top Honest Feature Importances:")
-print(importances.head(5))</p>
+<p>The non-linear XGBoost model mathematically outperformed legacy heuristic models across a robust 5-seed GroupShuffleSplit validation suite. We measured significant improvements in Precision@50 and Global Recall, validating the decision to deploy an ML triage engine over static heuristic rules.</p>
+<h2 id="sec-5">5. Limitations</h2>
+
+<ul>
+<li><strong>Heavy Feature Dependency:</strong> The model relies heavily on <code>impressions_prev_30d</code> and other traffic shapes, meaning entirely new URLs without 30 days of history cannot be accurately scored.</li>
+<li><strong>Label Definition Flaws:</strong> The label <code>trend_direction == 'down'</code> is a binary proxy. As discovered in Week 6, binary proxy labels can sometimes mask the true magnitude of decay, leading to edge cases where slow-burn decay is missed.</li>
+</ul>
 <h2 id="sec-6">6. Recommendations</h2>
 
 <p>The output of the model feeds a discrete Action Playbook:</p>
@@ -67,9 +69,12 @@ print(importances.head(5))</p>
 <li><strong>Standard Review:</strong> (Prob &gt; 0.4) Queue for regular audit (includes high-probability pages with low search volume).</li>
 <li><strong>Stable / No Action:</strong> Zero-traffic content or stable low-probability content (Prob &lt;= 0.4).</li>
 </ol>
+
 <h2 id="sec-7">7. Artifacts</h2>
 
 <p>Our artifacts include the live, interactive web application (Triage Engine) deployed natively in the browser, featuring a drag-and-drop CSV parser and an integrated Groq LLaMA 3.1 Copilot.</p>
+<p><strong>Deployed Application:</strong>
+<a href="https://zayer1.github.io/flyrank-ml-internship/">Launch the Live Web App &amp; LLaMA Copilot</a></p>
 <h2 id="sec-8">8. Acknowledgments</h2>
 <p>All dataset structures and theoretical bounds provided by the FlyRank Machine Learning Internship (https://flyrank.ai).</p>
 </div>
