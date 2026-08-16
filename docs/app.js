@@ -91,7 +91,7 @@ async function handleFileUpload(file) {
         }
         
         // Update Context for Chatbot
-        currentQueueContext = JSON.stringify({
+        currentQueueContext = `There are exactly ${data.scored_pages.length} URLs in this dataset. ` + JSON.stringify({
             total_urls_in_dataset: data.scored_pages.length,
             note: "Due to context limits, you are only being provided the top 50 highest priority URLs.",
             top_urls_preview: data.scored_pages.slice(0, 50)
