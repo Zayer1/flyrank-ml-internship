@@ -1,14 +1,22 @@
-# FlyRank ML Internship — Starter Repo
+# FlyRank ML Internship — Capstone Project
 
 **Applied Search Intelligence: Google Search Ranking & Discoverability**
 
-This is the starting point for the FlyRank ML Internship. You **clone it into your own public
-repo** (one click — *Use this template*), build everything there, and submit that repo URL on
-each assignment in your portal — it's your workspace, your submission, and your portfolio all
-at once. The rhythm is simple: do the work, commit it, submit on the card. Done.
+## 🎓 Capstone: Predictive SEO Triage & Action Playbook
 
-Everything here runs on a small **anonymized** slice of real FlyRank search data. No credentials,
-no private client data, no setup headaches.
+The highlight of this repository is the Week 8 Capstone project. Instead of just a Jupyter notebook, this project includes a **fully deployed ML triage pipeline**, an **interactive frontend**, and a **FastAPI backend** powered by XGBoost and LLaMA 3.1.
+
+**Quick Links for the Evaluator:**
+1. **[The Final Paper (Live)](https://zayer1.github.io/flyrank-ml-internship)** — Hosted via GitHub Pages, serving the interactive frontend and the final write-up.
+2. **The ML Pipeline:** `work/notebooks/capstone.ipynb` (End-to-end model training, validation, and ablation studies).
+3. **The Backend API:** `api/server.py` (FastAPI serving the XGBoost model and LLaMA 3.1 Groq integration).
+4. **The Frontend App:** `docs/index.html` & `docs/app.js` (The deployed interactive UI).
+
+*Note to Evaluator: The live paper UI is a prototype. To test the file upload scoring and the triage copilot yourself, clone this repository, install `requirements.txt`, add a `GROQ_API_KEY` to your environment, and run `python api/server.py` to start the local backend!*
+
+---
+
+This repository serves as the complete workspace and portfolio for the FlyRank ML Internship.
 
 > **New here?** Two reads: **[SETUP.md](SETUP.md)** (GitHub, Colab, and data access — ten
 > minutes, with every silent pitfall flagged), then **[GUIDE.md](GUIDE.md)** (every file
