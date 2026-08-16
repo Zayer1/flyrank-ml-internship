@@ -51,7 +51,7 @@ async def score_data(file: UploadFile = File(...)):
         global model
         if 'model' not in globals() or model is None:
             model = xgb.XGBClassifier(enable_categorical=True)
-            model_path = os.path.join(os.path.dirname(__file__), '..', 'xgb_model.json')
+            model_path = os.path.join(os.path.dirname(__file__), 'xgb_model.json')
             model.load_model(model_path)
     except Exception as e:
         traceback.print_exc()
