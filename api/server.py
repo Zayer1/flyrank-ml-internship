@@ -25,7 +25,7 @@ app = FastAPI(title="FlyRank Triage API")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -46,10 +46,13 @@ async def score_data(file: UploadFile = File(...)):
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Error parsing CSV: {str(e)}")
     
-    # Load the trained model
+    # Load the trained model globally if not already loaded
     try:
-        model = xgb.XGBClassifier()
-        model.load_model('xgb_model.json')
+        global model
+        if 'model' not in globals() or model is None:
+            model = xgb.XGBClassifier(enable_categorical=True)
+            model_path = os.path.join(os.path.dirname(__file__), '..', 'xgb_model.json')
+            model.load_model(model_path)
     except Exception as e:
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Error loading model. Did you run the capstone notebook? Details: {str(e)}")
@@ -112,6 +115,8 @@ async def score_data(file: UploadFile = File(...)):
 
 @app.post("/api/chat")
 async def chat(req: ChatRequest):
+    if not os.environ.get("GROQ_API_KEY"):
+        raise HTTPException(status_code=500, detail="GROQ_API_KEY is not set in the environment.")
     if not client:
         raise HTTPException(status_code=500, detail="OpenAI API not configured.")
 

@@ -124,11 +124,19 @@ function renderTable(results) {
         if (row.action === 'Urgent Refresh') actionClass = 'status-urgent';
         if (row.action === 'Standard Review') actionClass = 'status-standard';
 
-        tr.innerHTML = `
-            <td>${row.url_id}</td>
-            <td>${row.decay_probability.toFixed(3)}</td>
-            <td class="${actionClass}">${row.action}</td>
-        `;
+        const tdUrl = document.createElement('td');
+        tdUrl.textContent = row.url_id;
+        
+        const tdProb = document.createElement('td');
+        tdProb.textContent = row.decay_probability.toFixed(3);
+        
+        const tdAction = document.createElement('td');
+        tdAction.className = actionClass;
+        tdAction.textContent = row.action;
+        
+        tr.appendChild(tdUrl);
+        tr.appendChild(tdProb);
+        tr.appendChild(tdAction);
         tbody.appendChild(tr);
     });
 }
