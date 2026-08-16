@@ -62,7 +62,7 @@
 
 <p>The XGBoost model consistently outperformed the legacy heuristic model and a feature-equivalent Logistic Regression baseline across a repeated grouped, client-level holdout validation. We measured clear improvements in Precision@50, validating the decision to deploy an ML triage engine over static heuristic rules. </p>
 
-<p><strong>The Non-Linear Advantage:</strong> XGBoost outperforms the Logistic Regression baseline by a staggering ~49 points. A linear model fundamentally struggles here because SEO decay is highly non-linear and interactive. For example, a linear model might learn "high traffic = decay" or "young age = decay." But XGBoost can learn the <em>intersection</em>: a 2-day-old article with massive traffic is likely a viral spike destined to crash, whereas a 3-year-old article with massive traffic is a stable evergreen pillar. XGBoost captures these complex interactions natively, whereas LogReg requires manual feature crosses to even see them.</p>
+<p><strong>The Non-Linear Advantage &amp; Imputation Asymmetry:</strong> XGBoost outperforms the Logistic Regression baseline by a staggering ~48 points. To ensure this wasn't simply an artifact of how XGBoost natively routes missing values, we tested a "fair" LogReg pipeline equipped with median imputation and one-hot encoding for categorical features. The fair LogReg pipeline achieved a P@50 of 47.60% (±14.39%). The massive remaining gap confirms that SEO decay is highly non-linear and interactive. A linear model might learn "high traffic = decay", but XGBoost learns the intersection: a 2-day-old article with massive traffic is a viral spike destined to crash, whereas a 3-year-old article with massive traffic is a stable evergreen pillar.</p>
 <p><strong>Recall Framing:</strong> While 2.92% global recall appears low, it is an artifact of the strict 50-page editorial capacity limit constraint. What this number actually proves is that we are successfully packing the limited 50-page bandwidth with highly accurate candidates, concentrating true positives at a vastly higher density than random chance or legacy heuristics.</p>
 <h2 id="sec-5">5. Limitations</h2>
 
@@ -98,6 +98,7 @@
 <p>Our artifacts include the live, interactive web application (Triage Engine) deployed natively in the browser, featuring a drag-and-drop CSV parser and an integrated Groq LLaMA 3.1 Copilot.</p>
 <p><strong>Deployed Application:</strong>
 <a href="https://zayer1.github.io/flyrank-ml-internship/">Launch the Live Web App &amp; LLaMA Copilot</a></p>
+
 <p><strong>Probability Distribution:</strong> The right-skewed histogram reflects the business reality that severe decay is relatively rare. A strict quantitative check of the test set confirms this: only a very small fraction of pages breach the &gt;0.70 Urgent threshold, and a slightly larger minority breach the &gt;0.40 Standard threshold, preventing the editorial team from being flooded with false alarms.</p>
 <h2 id="sec-8">8. Acknowledgments</h2>
 <p>All dataset structures and theoretical bounds provided by the FlyRank Machine Learning Internship (https://flyrank.ai).</p>
