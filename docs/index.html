@@ -71,7 +71,7 @@
 <li><strong>Label Definition Flaws:</strong> The label <code>trend_direction == 'down'</code> is a binary proxy. As discovered in Week 6, binary proxy labels can sometimes mask the true magnitude of decay, leading to edge cases where slow-burn decay is missed.</li>
 <li><strong>Label Binning:</strong> The binary label forces 'new' pages (which naturally have low traffic) into the 'not declining' bucket, creating edge-case noise.</li>
 <li>
-<p><strong>Missingness Exploitation:</strong> <code>provider_used</code> is highly important but 71% missing. XGBoost may be exploiting the missingness pattern itself rather than true signal from the feature.</p>
+<p><strong>Missingness Exploitation Checked:</strong> Earlier iterations of this model showed <code>provider_used</code> (71% missing) as a top feature, raising concerns that XGBoost was exploiting its missingness pattern. To prevent this, we explicitly moved <code>provider_used</code>, <code>model_used</code>, and the potentially leaky <code>position_tier</code> to the <code>DROP_FOR_TRAIN</code> exclusion list. The model never sees them, yet still achieves 96.0% P@50, proving the core behavioral signal is robust.</p>
 </li>
 <li>
 <p><strong>Sample Size vs Warehouse:</strong> This model was trained on a 30,000-row sample, whereas the full production data warehouse contains ~79M rows. The extreme P@50 lift observed here may compress or revert to the mean when scaled to the full dataset.</p>
