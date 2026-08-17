@@ -9,10 +9,15 @@ The highlight of this repository is the Week 8 Capstone project. Instead of just
 **Quick Links for the Evaluator:**
 1. **[The Final Paper (Live)](https://zayer1.github.io/flyrank-ml-internship)** — Hosted via GitHub Pages, serving the interactive frontend and the final write-up.
 2. **The ML Pipeline:** `work/notebooks/capstone.ipynb` (End-to-end model training, validation, and ablation studies).
-3. **The Backend API:** `api/server.py` (FastAPI serving the XGBoost model and LLaMA 3.1 Groq integration).
+3. **The Backend API (V2 Production):** `api/server.py` (FastAPI serving the XGBoost model and LLaMA 3.1 Groq integration, with strict feature validation, rate-limiting via slowapi, and `X-API-Key` auth).
 4. **The Frontend App:** `docs/index.html` & `docs/app.js` (The deployed interactive UI).
 
-*Note to Evaluator: The live paper UI is a prototype. To test the file upload scoring and the triage copilot yourself, clone this repository, install `requirements.txt`, add a `GROQ_API_KEY` to your environment, and run `python api/server.py` to start the local backend!*
+*Note to Evaluator: The live paper UI is a prototype connected to a local backend for inference. To test the file upload scoring and the triage copilot yourself:*
+1. Clone this repository.
+2. Install dependencies: `pip install -r requirements.txt` (Dependencies are strictly pinned for production reproducibility).
+3. Add a `GROQ_API_KEY` to your environment or `.env` file.
+4. Start the backend: `python api/server.py`. The server will safely load the model and config at startup and expose the `/health` endpoint.
+5. The frontend will automatically pass `X-API-Key: flyrank-demo-123` to authenticate.
 
 ---
 

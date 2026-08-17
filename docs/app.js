@@ -80,6 +80,7 @@ async function handleFileUpload(file) {
     try {
         const response = await fetch(`${API_BASE}/score`, {
             method: 'POST',
+            headers: { 'X-API-Key': 'flyrank-demo-123' },
             body: formData
         });
 
@@ -162,7 +163,10 @@ async function sendChatMessage() {
     try {
         const response = await fetch(`${API_BASE}/chat`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                'X-API-Key': 'flyrank-demo-123'
+            },
             body: JSON.stringify({
                 message: message,
                 context: currentQueueContext
