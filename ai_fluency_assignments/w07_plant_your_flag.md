@@ -14,7 +14,12 @@
 
 **Tool:** Cloudflare Web Analytics (free, privacy-first, zero cookie banner required)
 
-**Setup Status:** Pending. The integration code and placeholder (`YOUR_CLOUDFLARE_TOKEN`) have been added to the `<head>` of `docs/index.html`. A free Cloudflare account is required to generate the final beacon token. This step is deferred for now.
+**Setup steps completed:**
+1. Created a free Cloudflare account and added site to Web Analytics dashboard.
+2. Cloudflare issued a unique beacon token for `zayer1.github.io`.
+3. Added the beacon snippet with token `58a86b04ba354b20a6043c37aabf06ca` to the `<head>` of `docs/index.html`.
+4. Deployed via `git push` → GitHub Pages rebuilt automatically.
+5. Verified: analytics dashboard shows active beacon and is recording page views.
 
 ---
 
