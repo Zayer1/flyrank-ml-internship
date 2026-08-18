@@ -1,4 +1,4 @@
-# Week 7 Deliverable: Wire One Real Thing (Automated ML Paper Triage)
+# Week 4 Deliverable (Part 2): Wire One Real Thing (Automated ML Paper Triage)
 
 **The Pipeline:** Automated ArXiv ML Paper Triage
 Every week, I spend hours manually skimming ArXiv for papers on XGBoost, LLaMA, and LoRA to stay updated. This workflow automates the skimming and alerts me only when a paper is highly relevant to my SEO predictive work.
