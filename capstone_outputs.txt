@@ -1,0 +1,109 @@
+=== CELL 4 OUTPUTS ===
+Dataset Info:
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 30000 entries, 0 to 29999
+Data columns (total 44 columns):
+ #   Column                  Non-Null Count  Dtype  
+---  ------                  --------------  -----  
+ 0   content_id              30000 non-null  object 
+ 1   client_id               30000 non-null  object 
+ 2   search_volume           27532 non-null  float64
+ 3   competition             27532 non-null  float64
+ 4   competition_level       27390 non-null  object 
+ 5   cpc                     27532 non-null  float64
+ 6   content_type            30000 non-null  object 
+ 7   main_intent             27626 non-null  object 
+ 8   word_count              22301 non-null  float64
+ 9   char_count              22301 non-null  float64
+ 10  provider_used           8562 non-null   object 
+ 11  model_used              24267 non-null  object 
+ 12  impressions_90d         30000 non-null  int64  
+ 13  clicks_90d              30000 non-null  int64  
+ 14  pageviews_90d           30000 non-null  int64  
+ 15  sessions_90d            30000 non-null  int64  
+ 16  users_90d               30000 non-null  int64  
+ 17  engaged_sessions_90d    30000 non-null  int64  
+ 18  ai_sessions_90d         30000 non-null  int64  
+ 19  scroll_events_90d       30000 non-null  int64  
+ 20  days_with_impressions   30000 non-null  int64  
+ 21  days_with_sessions      30000 non-null  int64  
+ 22  impressions_last_30d    30000 non-null  int64  
+ 23  clicks_last_30d         30000 non-null  int64  
+ 24  sessions_last_30d       30000 non-null  int64  
+ 25  impressions_prev_30d    30000 non-null  int64  
+ 26  clicks_prev_30d         30000 non-null  int64  
+ 27  sessions_prev_30d       30000 non-null  int64  
+ 28  content_age_days        30000 non-null  int64  
+ 29  age_tier                30000 non-null  object 
+ 30  age_tier_order          30000 non-null  int64  
+ 31  days_since_last_update  30000 non-null  int64  
+ 32  freshness_tier          30000 non-null  object 
+ 33  word_count_tier         22301 non-null  object 
+ 34  char_count_tier         22301 non-null  object 
+ 35  ctr                     30000 non-null  float64
+ 36  avg_position            30000 non-null  float64
+ 37  engagement_rate         30000 non-null  float64
+ 38  scroll_rate             29875 non-null  float64
+ 39  ai_traffic_pct          30000 non-null  float64
+ 40  impression_tier         30000 non-null  object 
+ 41  position_tier           30000 non-null  object 
+ 42  trend_direction         30000 non-null  object 
+ 43  trend_pct               26612 non-null  float64
+dtypes: float64(11), int64(19), object(14)
+memory usage: 10.1+ MB
+
+Trend Direction Balance:
+trend_direction
+down      0.542067
+stable    0.198733
+up        0.146267
+new       0.074533
+flat      0.038400
+Name: proportion, dtype: float64
+
+
+=== CELL 6 OUTPUTS ===
+Dropped features (to prevent leakage): ['client_id', 'content_id', 'trend_direction', 'trend_pct', 'is_declining_label', 'impressions_last_30d', 'clicks_last_30d', 'sessions_last_30d', 'impressions_90d', 'clicks_90d', 'pageviews_90d', 'sessions_90d', 'users_90d', 'engaged_sessions_90d', 'ai_sessions_90d', 'scroll_events_90d', 'ctr', 'avg_position', 'engagement_rate', 'scroll_rate', 'ai_traffic_pct', 'impression_tier', 'provider_used', 'model_used', 'position_tier']
+
+Target Label Balance (Train): 55.01% declining
+Target Label Balance (Test): 51.10% declining
+
+Train set: 23837 rows, 25 clients
+Test set: 6163 rows, 7 clients
+
+
+=== CELL 8 OUTPUTS ===
+=== 5-SEED GROUP SHUFFLE SPLIT EVALUATION ===
+
+Baseline P@50: 49.60% +/- 13.11%
+LogReg P@50:   46.80% +/- 13.48%
+XGBoost P@50:  96.00% +/- 2.83%
+XGBoost Recall:2.92% +/- 1.65%
+
+=== HYPERPARAMETER TUNING ===
+
+Best params: {'max_depth': 3, 'n_estimators': 100}
+Model saved to api/xgb_model.json
+
+
+=== CELL 9 OUTPUTS ===
+Top Honest Feature Importances:
+                 feature  importance
+10  impressions_prev_30d    0.222719
+18       word_count_tier    0.108566
+13      content_age_days    0.088023
+4           content_type    0.083340
+9     days_with_sessions    0.081773
+
+
+=== CELL 12 OUTPUTS ===
+
+=== THRESHOLD VALIDATION ===
+
+Empirical Precision at >0.70 (Urgent): 72.94%
+Empirical Precision at >0.40 (Standard): 62.31%
+
+
+=== CELL 14 OUTPUTS ===
+<Figure size 1000x600 with 1 Axes>
+
