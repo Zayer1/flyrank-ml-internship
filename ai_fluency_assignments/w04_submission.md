@@ -9,23 +9,9 @@
 
 **Three Stack Options Considered:**
 
-1. **The Simplest: Notion + Super.so**
-   - **How to build:** Write content in Notion, publish via Super.so.
-   - **Hosting:** Free on Super.so.
-   - **Backend needed?** No.
-   - **Trade-off:** Fast to set up, but terrible for rendering Jupyter Notebooks, raw code blocks, and complex ML math. It breaks the way my work needs to be shown.
-
-2. **The Middle Path (Front-runner): Quarto via GitHub Pages**
-   - **How to build:** Write in `.ipynb` or Markdown, let Quarto compile it into a static site.
-   - **Hosting:** Free on GitHub Pages.
-   - **Backend needed?** No.
-   - **Trade-off:** Requires installing a CLI and a small learning curve for the build step, but it perfectly and natively renders data science notebooks without fighting UI frameworks.
-
-3. **The Most Powerful: Next.js + Vercel**
-   - **How to build:** Build React components and route them using Next.js.
-   - **Hosting:** Free on Vercel.
-   - **Backend needed?** Yes (serverless functions available), but not needed yet.
-   - **Trade-off:** Total design freedom and highly dynamic, but it is massive overkill. Maintaining a React app distracts from the core goal of showcasing ML engineering.
+1. **Notion + Super.so (Simplest):** Free, no backend. Fast setup, but breaks my ML work (can't render Jupyter notebooks or complex math properly).
+2. **Quarto + GitHub Pages (Front-runner):** Free, no backend. Slight learning curve for the CLI, but perfectly and natively renders Jupyter notebooks without fighting UI frameworks.
+3. **Next.js + Vercel (Most Powerful):** Free, optional backend. Total design freedom, but massive overkill and a maintenance distraction from core ML engineering.
 
 **My Decision & Rationale:**
 
