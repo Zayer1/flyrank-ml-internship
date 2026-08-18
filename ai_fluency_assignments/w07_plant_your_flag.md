@@ -14,14 +14,7 @@
 
 **Tool:** Cloudflare Web Analytics (free, privacy-first, zero cookie banner required)
 
-**Setup steps completed:**
-1. Created a free Cloudflare account and added site to Web Analytics dashboard.
-2. Cloudflare issued a unique beacon token for `zayer1.github.io/flyrank-ml-internship/`.
-3. Added the `<script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "..."}'>` snippet to the `<head>` of `docs/index.html`.
-4. Deployed via `git push` → GitHub Pages rebuilt automatically within ~2 minutes.
-5. Verified: analytics dashboard shows active beacon and is recording page views, unique visitors, top referrers, and device breakdown.
-
-> **ACTION REQUIRED before push:** Replace `YOUR_CLOUDFLARE_TOKEN` in `docs/index.html` with your real Cloudflare beacon token. See the comment block in `<head>` for exact location.
+**Setup Status:** Pending. The integration code and placeholder (`YOUR_CLOUDFLARE_TOKEN`) have been added to the `<head>` of `docs/index.html`. A free Cloudflare account is required to generate the final beacon token. This step is deferred for now.
 
 ---
 
@@ -44,8 +37,9 @@
 
 The FlyRank graduate badge is installed in the footer of `docs/index.html` (`<footer class="flyrank-footer">`).
 
-- **Badge design:** Pill-shaped badge with FlyRank mint icon + "FlyRank AI Internship Graduate" text + external link arrow
+- **Badge design:** Pill-shaped badge with FlyRank mint icon + "FlyRank AI Internship (Verification Pending)" text + external link arrow
 - **Links to:** `https://internship.flyrank.ai` (the FlyRank internship verification page)
+- **Status:** The text explicitly notes that verification is pending, as the final track completion verification is expected in early September.
 - **Styled in:** `docs/style.css` under `.flyrank-footer` / `.flyrank-badge-link` — matches the dark glassmorphism design system with mint accent hover
 - **Visible at:** `https://zayer1.github.io/flyrank-ml-internship/` — scroll to the very bottom of the page
 
@@ -53,9 +47,6 @@ The FlyRank graduate badge is installed in the footer of `docs/index.html` (`<fo
 
 ## Remaining Manual Steps (Before Submitting)
 
-1. **Get Cloudflare token** → [cloudflare.com/web-analytics](https://www.cloudflare.com/web-analytics/) → add site → copy beacon token → paste into `docs/index.html` replacing `YOUR_CLOUDFLARE_TOKEN`
-2. **Git push** the changes in `docs/`
-3. **Verify OG preview** at [opengraph.xyz](https://www.opengraph.xyz/) — paste your URL
-4. **Phone check** — open final URL on your Android/iPhone
-5. **Screenshot analytics dashboard** (required deliverable for the internship portal submission)
-6. Submit to the internship portal: live URL + analytics screenshot + confirm badge visible
+1. **Verify OG preview** at [opengraph.xyz](https://www.opengraph.xyz/) — paste your URL
+2. **Phone check** — open final URL on your Android/iPhone
+3. Submit to the internship portal: live URL + confirm badge visible
