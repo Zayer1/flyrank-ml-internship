@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlyRank V2 Architecture Proposal | Zero-Shot Cascade</title>
+    
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>%E2%9A%A1</text></svg>">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* V2 Specific Overrides & Flowchart */
+        .v2-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .v2-header h1 {
+            font-size: 2.8rem;
+            background: linear-gradient(90deg, #f1f5f9, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .v2-subtitle {
+            color: var(--accent);
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        .section-block {
+            margin-bottom: 60px;
+        }
+
+        .v2-flowchart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 0;
+            margin: 40px 0;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .flow-node {
+            padding: 20px 30px;
+            border-radius: 12px;
+            text-align: center;
+            min-width: 320px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+        }
+        
+        .flow-node:hover {
+            transform: translateY(-2px);
+        }
+
+        .node-user {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-main);
+        }
+
+        .node-gateway {
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            color: #38bdf8;
+        }
+
+        .node-brain {
+            background: #334155;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            box-shadow: 0 0 20px rgba(51, 65, 85, 0.5);
+        }
+
+        .node-mouth {
+            background: #10B981;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            color: white;
+            box-shadow: 0 0 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .flow-arrow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            height: 60px;
+        }
+
+        .flow-arrow .line {
+            width: 2px;
+            height: 100%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0.4), rgba(255,255,255,0.1));
+        }
+
+        .flow-arrow .arrowhead {
+            position: absolute;
+            bottom: -2px;
+            width: 0; 
+            height: 0; 
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid rgba(255,255,255,0.4);
+        }
+
+        .flow-arrow-label {
+            position: absolute;
+            left: 50%;
+            transform: translateX(20px);
+            background: var(--bg-dark);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            border: 1px solid rgba(255,255,255,0.1);
+            white-space: nowrap;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        .economics-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .econ-card {
+            text-align: center;
+            padding: 40px 30px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 16px;
+        }
+
+        .econ-val {
+            font-size: 3rem;
+            font-weight: 800;
+            color: #10B981;
+            margin-bottom: 15px;
+            text-shadow: 0 0 30px rgba(16, 185, 129, 0.3);
+        }
+        
+        .econ-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-muted);
+            text-decoration: none;
+            margin-bottom: 30px;
+            transition: color 0.2s;
+        }
+        
+        .back-btn:hover {
+            color: var(--text-main);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container" style="justify-content: center;">
+        
+        <main class="main-content" style="max-width: 900px; flex: none; width: 100%;">
+            <div class="content-wrapper glass-panel">
+                
+                <a href="index.html" class="back-btn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                    Back to V1 Capstone
+                </a>
+
+                <div class="v2-header">
+                    <div class="v2-subtitle">Architectural Proposal</div>
+                    <h1>FlyRank V2</h1>
+                    <p class="author-block" style="border: none; margin: 0; padding: 0;">Prepared by Đỗ Công Bình</p>
+                </div>
+
+                <div class="paper-body">
+                    <div class="section-block">
+                        <p class="lead" style="font-size: 1.1rem; color: #e2e8f0;">The current FlyRank V1 ML pipeline successfully implements a highly optimized XGBoost ensemble to predict SEO decay. While highly precise (optimized for Precision@50), it is fundamentally constrained by the limitations of classical Machine Learning: it requires historical, tabular CSV data to operate.</p>
+                        <p>This proposal outlines the architecture for <strong>FlyRank V2</strong>, transitioning from classical ML to a <strong>Model Cascade Deep Learning Architecture</strong>. This V2 system would be capable of <strong>Zero-Shot Inference</strong>—allowing users to input a raw URL with zero historical data, while the system dynamically estimates virality, structural integrity, and SEO decay risk.</p>
+                    </div>
+
+                    <div class="section-block">
+                        <h2>1. The Core Limitation of V1</h2>
+                        <p>Classical tree-based models (XGBoost/LightGBM) operate purely as mathematical pattern matchers on historical tabular data.</p>
+                        <div style="background: rgba(239, 68, 68, 0.1); border-left: 4px solid var(--urgent); padding: 15px 20px; border-radius: 0 8px 8px 0;">
+                            <strong>The Bottleneck:</strong> If a user writes a completely new post with zero historical search console data, V1 cannot evaluate it. It is blind without the CSV.
+                        </div>
+                    </div>
+
+                    <div class="section-block">
+                        <h2>2. Proposed Architecture: The Model Cascade</h2>
+                        <p>To achieve Zero-Shot prediction, we must transition to a specialized Deep Learning pipeline that possesses an internal semantic "world model" of language, SEO, and structural patterns. To optimize for cost and speed, V2 will utilize a <strong>Router / Cascade</strong> pipeline.</p>
+                        
+                        <!-- CUSTOM ARCHITECTURE DIAGRAM -->
+                        <div class="v2-flowchart">
+                            <div class="flow-node node-user">User Inputs Raw URL</div>
+                            
+                            <div class="flow-arrow">
+                                <div class="line"></div>
+                                <div class="arrowhead"></div>
+                            </div>
+                            
+                            <div class="flow-node node-gateway">FastAPI Gateway</div>
+                            
+                            <div class="flow-arrow">
+                                <div class="line"></div>
+                                <div class="arrowhead"></div>
+                            </div>
+                            
+                            <div class="flow-node node-brain">Step 1: The "Brain"<br><span style="font-size: 0.85rem; font-weight: 400; opacity: 0.8;">Fine-Tuned LoRA (Heavy Inference)</span></div>
+                            
+                            <div class="flow-arrow">
+                                <div class="line"></div>
+                                <div class="arrowhead"></div>
+                                <div class="flow-arrow-label">Calculates Mathematical Embeddings<br>→ Outputs Raw JSON Score</div>
+                            </div>
+                            
+                            <div class="flow-node node-mouth">Step 2: The "Mouth"<br><span style="font-size: 0.85rem; font-weight: 400; opacity: 0.9;">Groq LLaMA 8B Proxy (High-Speed)</span></div>
+                            
+                            <div class="flow-arrow">
+                                <div class="line"></div>
+                                <div class="arrowhead"></div>
+                                <div class="flow-arrow-label">Translates JSON to Strategy</div>
+                            </div>
+                            
+                            <div class="flow-node node-user" style="border-color: #10B981; color: white;">Final Action Playbook Generated</div>
+                        </div>
+                    </div>
+
+                    <div class="section-block">
+                        <h2>3. Business Impact & Unit Economics</h2>
+                        
+                        <div class="economics-grid">
+                            <div class="econ-card glass-panel">
+                                <div class="econ-val">$0.0025</div>
+                                <p><strong>Cost Per Inference</strong><br>By decoupling the Brain and Mouth, GPU costs are slashed by 90% compared to a unified LLM.</p>
+                            </div>
+                            <div class="econ-card glass-panel">
+                                <div class="econ-val" style="color: #38bdf8;">∞</div>
+                                <p><strong>Frictionless Onboarding</strong><br>Users drop a raw URL into the UI. No Search Console connections or CSV uploads required.</p>
+                            </div>
+                        </div>
+
+                        <ul style="margin-top: 30px; padding-left: 20px; line-height: 1.8; color: var(--text-muted);">
+                            <li><strong style="color: white;">Expanding Total Addressable Market (TAM):</strong> V1 serves enterprise clients with established datasets. V2 opens the market to small firms, solo creators, and startups who lack historical CSV data.</li>
+                            <li><strong style="color: white;">Product-Led Growth (Freemium):</strong> The fractional unit economics unlock the financial viability of a "Free Trial" tier, massively lowering CAC.</li>
+                            <li><strong style="color: white;">Proprietary Moat:</strong> The fine-tuned LoRA weights combined with the XGBoost ensemble vectors create a highly defensible algorithm that generic wrappers cannot replicate.</li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+</html>
