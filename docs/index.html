@@ -3,7 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FlyRank Capstone: Predictive Triage Engine</title>
+
+    <!-- ════════════════════════════════════════
+         PAGE IDENTITY
+    ════════════════════════════════════════ -->
+    <title>Zayer · FlyRank ML Capstone: Predictive SEO Triage Engine</title>
+    <meta name="description" content="XGBoost model achieving 95.6% Precision@50 for predicting SEO traffic decay — proving non-linear ML beats heuristic baselines. FlyRank ML Internship Capstone by Zayer.">
+
+    <!-- Inline SVG favicon — no extra file required -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>%E2%88%91</text></svg>">
+
+    <!-- ════════════════════════════════════════
+         OPEN GRAPH — controls link preview card
+         in Slack, LinkedIn, iMessage, Twitter, etc.
+    ════════════════════════════════════════ -->
+    <meta property="og:type"        content="website">
+    <meta property="og:title"       content="FlyRank ML Capstone: Predictive SEO Triage Engine">
+    <meta property="og:description" content="XGBoost classifier achieving 95.6% Precision@50 — proving non-linear ML drastically outperforms heuristic baselines for SEO content triage.">
+    <meta property="og:url"         content="https://zayer1.github.io/flyrank-ml-internship/">
+    <meta property="og:image"       content="https://zayer1.github.io/flyrank-ml-internship/prob_dist.png">
+    <meta property="og:site_name"   content="Zayer · FlyRank Capstone">
+
+    <!-- Twitter / X card -->
+    <meta name="twitter:card"        content="summary_large_image">
+    <meta name="twitter:title"       content="FlyRank ML Capstone: Predictive SEO Triage Engine">
+    <meta name="twitter:description" content="XGBoost classifier achieving 95.6% Precision@50 — proving non-linear ML drastically outperforms heuristic baselines for SEO content triage.">
+    <meta name="twitter:image"       content="https://zayer1.github.io/flyrank-ml-internship/prob_dist.png">
+
+    <!-- ════════════════════════════════════════
+         ANALYTICS — Cloudflare Web Analytics
+         Free, privacy-first, no cookie banner needed.
+
+         ACTION REQUIRED:
+         1. Go to https://www.cloudflare.com/web-analytics/
+         2. Add your site → copy the beacon token
+         3. Replace YOUR_CLOUDFLARE_TOKEN below with your real token
+    ════════════════════════════════════════ -->
+    <script defer src="https://static.cloudflareinsights.com/beacon.min.js"
+            data-cf-beacon='{"token": "YOUR_CLOUDFLARE_TOKEN"}'></script>
+
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
 </head>
@@ -171,5 +209,26 @@ The model relies entirely on the raw features provided in the core dataset, util
         </main>
     </div>
     <script src="app.js?v=3"></script>
+
+    <!-- ════════════════════════════════════════
+         FLYRANK GRADUATE BADGE
+         Links to the FlyRank internship verification page.
+         Week 9 requirement: must be visible in the footer.
+    ════════════════════════════════════════ -->
+    <footer class="flyrank-footer">
+        <a href="https://internship.flyrank.ai" target="_blank" rel="noopener" class="flyrank-badge-link" aria-label="FlyRank AI Internship — Verification Page">
+            <img
+                src="https://bunaohubsjkbdsqoclxe.supabase.co/storage/v1/object/public/cdn/flyrank-visual-identity/flyrank-icon-mint.svg"
+                alt="FlyRank logo"
+                class="flyrank-badge-icon"
+                width="20"
+                height="20">
+            <span class="flyrank-badge-text">FlyRank AI Internship Graduate</span>
+            <svg class="flyrank-badge-arrow" aria-hidden="true" viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 10 L10 2 M4 2 h6 v6"/>
+            </svg>
+        </a>
+    </footer>
+
 </body>
 </html>
