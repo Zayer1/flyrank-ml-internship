@@ -14,6 +14,19 @@ Classical tree-based models (XGBoost/LightGBM) operate purely as mathematical pa
 ## 2. Proposed Architecture: The Model Cascade
 To achieve Zero-Shot prediction, we must transition to a specialized Deep Learning pipeline that possesses an internal semantic "world model" of language, SEO, and structural patterns. To optimize for cost and speed, V2 will utilize a **Router / Cascade** pipeline.
 
+```mermaid
+graph TD
+    A[User Inputs Raw URL] --> B[FastAPI Gateway]
+    B --> C{The Brain: Fine-Tuned LoRA}
+    C -->|Calculates Mathematical Embeddings| D[Raw JSON Score Output]
+    D --> E{The Mouth: Groq LLaMA 8B Proxy}
+    E -->|Translates JSON to Human Strategy| F[Final Action Playbook]
+    
+    style C fill:#334155,stroke:#fff,stroke-width:2px,color:#fff
+    style E fill:#10B981,stroke:#fff,stroke-width:2px,color:#fff
+```
+
+
 ### Step 1: The "Brain" (Specialized Heavy Inference)
 Instead of a generalist LLM, we fine-tune a heavy open-weights model (e.g., LLaMA-3 70B or equivalent) using **LoRA (Low-Rank Adaptation)**. 
 - The model is fine-tuned strictly on SEO performance datasets. 
