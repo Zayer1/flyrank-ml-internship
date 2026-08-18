@@ -34,4 +34,4 @@ Running a heavy LoRA model for conversational output is an inefficient use of GP
 5. **Proprietary Moat:** The fine-tuned LoRA weights combined with the XGBoost ensemble vectors create a highly defensible, proprietary algorithm that generic AI wrappers cannot easily replicate.
 
 ---
-*Prepared by Zayer — Submitted alongside the FlyRank V1 Capstone.*
+*Prepared by Đỗ Công Bình — Submitted alongside the FlyRank V1 Capstone.*
