@@ -11,6 +11,15 @@
     
     <style>
         /* V2 Specific Overrides & Flowchart */
+        /* Hide Scrollbar */
+        .main-content::-webkit-scrollbar {
+            display: none;
+        }
+        .main-content {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+        
         .v2-header {
             text-align: center;
             margin-bottom: 50px;
