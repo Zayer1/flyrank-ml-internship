@@ -1,50 +1,58 @@
 # Technical Proposal: FlyRank V2 (Zero-Shot Predictive Architecture)
 
 ## Executive Summary
-The current FlyRank V1 ML pipeline successfully implements a highly optimized XGBoost ensemble to predict SEO decay. While highly precise (optimized for Precision@50), it is fundamentally constrained by the limitations of classical Machine Learning: it requires historical, tabular CSV data (clicks, impressions, ctr) to operate.
+The current FlyRank V1 ML pipeline successfully implements a highly optimized XGBoost ensemble to predict SEO decay, achieving 96% Precision@50 on grouped test sets. However, a rigorous post-mortem reveals structural limitations in V1 that cap its ceiling and prevent it from evaluating brand-new URLs.
 
-This proposal outlines the architecture for **FlyRank V2**, transitioning from classical ML to a **Model Cascade Deep Learning Architecture**. This V2 system would be capable of **Zero-Shot Inference**—allowing users to input a raw URL with zero historical data, while the system dynamically estimates virality, structural integrity, and SEO decay risk.
+This proposal outlines the architecture for **FlyRank V2**, transitioning to a **Model Cascade Deep Learning Architecture**. V2 solves the V1 cold-start problem by introducing a structural web crawler and a fine-tuned LoRA model, capable of **Zero-Shot Inference** for URLs with no historical data.
 
 ---
 
-## 1. The Core Limitation of V1
-Classical tree-based models (XGBoost/LightGBM) operate purely as mathematical pattern matchers on historical tabular data. 
-- **The Bottleneck:** If a user writes a completely new post (e.g., `zayermorning.com/new-article`) with zero historical search console data, V1 cannot evaluate it. It is blind without the CSV.
+## 1. V1 Post-Mortem: Why Classical ML Has Hit a Ceiling
+Before proposing V2, it is critical to acknowledge the mathematical limitations of the V1 build:
+1. **The Cold-Start Blindness:** The #1 feature in V1 is `impressions_prev_30d` (22.2% importance). If a user inputs a brand new URL, this is `NaN`. XGBoost routes this missing value to the non-declining branch by construction. V1 is fundamentally incapable of evaluating zero-history content.
+2. **The Bayes Error Floor:** V1 achieved a ROC-AUC of 0.7508. This is not a tuning failure, but the theoretical ceiling of the proxy label (`trend_pct < -20%`), which carries ~15-25% generative noise from seasonality and viral spikes. 
+
+V2 is designed specifically to solve the Cold-Start problem, while laying the groundwork to solve the proxy label noise in partnership with the senior ML team.
 
 ## 2. Proposed Architecture: The Model Cascade
-To achieve Zero-Shot prediction, we must transition to a specialized Deep Learning pipeline that possesses an internal semantic "world model" of language, SEO, and structural patterns. To optimize for cost and speed, V2 will utilize a **Router / Cascade** pipeline.
+To achieve Zero-Shot prediction, V2 decouples feature extraction, heavy semantic scoring, and natural language generation into a highly efficient pipeline.
 
 ```mermaid
 graph TD
-    A["User Inputs Raw URL"] --> B["FastAPI Gateway"]
-    B --> C{"The Brain: Fine-Tuned LoRA"}
-    C -->|"Calculates Mathematical Embeddings"| D["Raw JSON Score Output"]
-    D --> E{"The Mouth: Groq LLaMA 8B Proxy"}
-    E -->|"Translates JSON to Human Strategy"| F["Final Action Playbook"]
+    A["User Inputs Raw URL (Zero History)"] --> B["FastAPI Gateway"]
+    B --> C["The Crawler: Structural Extraction"]
+    C -->|"Extracts: Word Count, Headings, Depth, Schema"| D{"The Brain: Fine-Tuned LoRA"}
     
-    style C fill:#334155,stroke:#fff,stroke-width:2px,color:#fff
-    style E fill:#10B981,stroke:#fff,stroke-width:2px,color:#fff
+    X["V1 XGBoost (If History Exists)"] -.->|"Injects Probability + Top SHAP Signals"| D
+    
+    D -->|"Calculates JSON Score"| E["Raw JSON"]
+    E --> F{"The Mouth: Groq LLaMA 8B Proxy"}
+    F -->|"Translates to Human Strategy"| G["Final Action Playbook"]
+    
+    style D fill:#334155,stroke:#fff,stroke-width:2px,color:#fff
+    style F fill:#10B981,stroke:#fff,stroke-width:2px,color:#fff
 ```
 
+### Step 1: The Crawler (The Cold-Start Fix)
+For URLs with no Google Search Console data, the Gateway instantly crawls the live URL to extract structural proxies for content quality: `word_count`, `heading_hierarchy`, `internal_link_count`, and `schema_markup`. 
 
-### Step 1: The "Brain" (Specialized Heavy Inference)
-Instead of a generalist LLM, we fine-tune a heavy open-weights model (e.g., LLaMA-3 70B or equivalent) using **LoRA (Low-Rank Adaptation)**. 
-- The model is fine-tuned strictly on SEO performance datasets. 
-- **Ensemble Embeddings:** To maximize accuracy, the mathematical tree-leaf outputs (vectors) from the V1 XGBoost model can be fed directly into the Deep Learning prompt context, giving the neural network a pre-processed mathematical head start.
-- **Output:** The model does not generate conversational text. It outputs a strict, deterministic JSON object containing calculated scores (e.g., `{"virality_potential": 8.5, "refresh_required": false}`).
+### Step 2: The "Brain" (Specialized Heavy Inference)
+A heavy open-weights model (e.g., LLaMA-3 70B) fine-tuned using **LoRA (Low-Rank Adaptation)** on tabular instruction pairs. 
+- **The V1 Handshake:** If the URL *does* have historical data, V1 is still used. Instead of injecting raw tree-leaf vectors (which lack semantic meaning to an LLM), we inject V1's `predict_proba` and top SHAP feature importances as text context.
+- **Output:** Outputs a strict, deterministic JSON object containing calculated opportunity/risk scores.
 
-### Step 2: The "Mouth" (High-Speed Proxy)
-Running a heavy LoRA model for conversational output is an inefficient use of GPU cycles.
-- The raw JSON output from Step 1 is passed to an ultra-fast, low-cost API proxy (e.g., **Groq** using a smaller 8B model).
-- The Groq proxy translates the raw mathematical JSON into a conversational, human-readable Action Playbook for the end user in milliseconds.
+### Step 3: The "Mouth" (High-Speed Proxy)
+The raw JSON output from the Brain is passed to an ultra-fast API proxy (e.g., **Groq LLaMA 8B**), which translates the math into a conversational Action Playbook in milliseconds.
 
-## 3. Business Impact
-1. **Frictionless Onboarding:** Users no longer need to connect Google Search Console or upload heavy CSVs to get immediate value. They drop a raw URL into the UI, and the system evaluates it instantly.
-2. **Cost Optimization & Unit Economics:** By decoupling the Heavy Inference (Brain) from the Conversational Generation (Mouth), GPU costs are slashed by up to 90% per request compared to using a unified heavy LLM. 
-   - *Cost Estimate:* Assuming a LoRA adapter hosted on serverless infrastructure (~$1.20/1M tokens) and a Groq LLaMA 8B proxy (~$0.05/1M tokens), evaluating a standard 2,000-token URL would cost roughly **$0.0025 per inference**. This allows for massive scale while maintaining highly lucrative gross margins.
-3. **Expanding Total Addressable Market (TAM):** V1 serves enterprise clients with established datasets. V2 opens the market to small firms, solo creators, and startups who lack historical CSV data or data science teams, massively expanding the client base.
-4. **Product-Led Growth (Freemium Acquisition):** Because the V2 unit economics run at fractions of a cent per inference, it unlocks the financial viability of a "Free Trial" tier. Users can test the product on a single URL for free, lowering customer acquisition costs (CAC) and driving organic conversion to the $1,499/month tier.
-5. **Proprietary Moat:** The fine-tuned LoRA weights combined with the XGBoost ensemble vectors create a highly defensible, proprietary algorithm that generic AI wrappers cannot easily replicate.
+## 3. Business Impact & Unit Economics
+1. **Frictionless Onboarding:** Users no longer need to connect Google Search Console or upload heavy CSVs to get immediate value. They drop a raw URL, and the crawler + cascade evaluates it instantly.
+2. **Cost Optimization:** Decoupling the Heavy Inference (Brain) from Generation (Mouth) slashes GPU costs. Evaluating a standard URL costs roughly **$0.0025 per inference**.
+3. **Expanding TAM & PLG:** V2 opens the market to solo creators and startups lacking historical data, enabling a highly lucrative "Free Trial" tier to lower CAC.
+
+## 4. Open Technical Questions (For Senior Engineering Review)
+To move this from proposal to production, I would look to collaborate with the FlyRank ML team on two specific fronts:
+1. **Time-Series Ground Truth:** Moving away from the 30-day proxy label to a true future-window outcome using the 79M row warehouse to break the 0.75 ROC-AUC ceiling.
+2. **Crawler Infrastructure:** Defining the specific structural features (e.g., keyword density vs. semantic distance) the crawler should pass to the LoRA Brain.
 
 ---
-*Prepared by Đỗ Công Bình — Submitted alongside the FlyRank V1 Capstone.*
+*Prepared by Zayer — Submitted alongside the FlyRank V1 Capstone.*

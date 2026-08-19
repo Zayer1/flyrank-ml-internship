@@ -84,6 +84,12 @@
             border: 1px solid rgba(56, 189, 248, 0.4);
             color: #38bdf8;
         }
+        
+        .node-crawler {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            color: #f59e0b;
+        }
 
         .node-brain {
             background: #334155;
@@ -196,30 +202,34 @@
                 <div class="v2-header">
                     <div class="v2-subtitle">Architectural Proposal</div>
                     <h1>FlyRank V2</h1>
-                    <p class="author-block" style="border: none; margin: 0; padding: 0;">Prepared by Đỗ Công Bình</p>
+                    <p class="author-block" style="border: none; margin: 0; padding: 0;">Prepared by Zayer</p>
                 </div>
 
                 <div class="paper-body">
                     <div class="section-block">
-                        <p class="lead" style="font-size: 1.1rem; color: #e2e8f0;">The current FlyRank V1 ML pipeline successfully implements a highly optimized XGBoost ensemble to predict SEO decay. While highly precise (optimized for Precision@50), it is fundamentally constrained by the limitations of classical Machine Learning: it requires historical, tabular CSV data to operate.</p>
-                        <p>This proposal outlines the architecture for <strong>FlyRank V2</strong>, transitioning from classical ML to a <strong>Model Cascade Deep Learning Architecture</strong>. This V2 system would be capable of <strong>Zero-Shot Inference</strong>—allowing users to input a raw URL with zero historical data, while the system dynamically estimates virality, structural integrity, and SEO decay risk.</p>
+                        <p class="lead" style="font-size: 1.1rem; color: #e2e8f0;">The current FlyRank V1 ML pipeline successfully implements a highly optimized XGBoost ensemble to predict SEO decay, achieving 96% Precision@50 on grouped test sets. However, a rigorous post-mortem reveals structural limitations in V1 that cap its ceiling and prevent it from evaluating brand-new URLs.</p>
+                        <p>This proposal outlines the architecture for <strong>FlyRank V2</strong>, transitioning to a <strong>Model Cascade Deep Learning Architecture</strong>. V2 solves the V1 cold-start problem by introducing a structural web crawler and a fine-tuned LoRA model, capable of <strong>Zero-Shot Inference</strong> for URLs with no historical data.</p>
                     </div>
-
+                    
                     <div class="section-block">
-                        <h2>1. The Core Limitation of V1</h2>
-                        <p>Classical tree-based models (XGBoost/LightGBM) operate purely as mathematical pattern matchers on historical tabular data.</p>
-                        <div style="background: rgba(239, 68, 68, 0.1); border-left: 4px solid var(--urgent); padding: 15px 20px; border-radius: 0 8px 8px 0;">
-                            <strong>The Bottleneck:</strong> If a user writes a completely new post with zero historical search console data, V1 cannot evaluate it. It is blind without the CSV.
+                        <h2>1. V1 Post-Mortem: Why Classical ML Has Hit a Ceiling</h2>
+                        <p>Before proposing V2, it is critical to acknowledge the mathematical limitations of the V1 build:</p>
+                        <ul style="padding-left: 20px; line-height: 1.8; color: var(--text-muted);">
+                            <li><strong style="color: white;">The Cold-Start Blindness:</strong> The #1 feature in V1 is <code>impressions_prev_30d</code> (22.2% importance). If a user inputs a brand new URL, this is <code>NaN</code>. XGBoost routes this missing value to the non-declining branch by construction. V1 is fundamentally incapable of evaluating zero-history content.</li>
+                            <li><strong style="color: white;">The Bayes Error Floor:</strong> V1 achieved a ROC-AUC of 0.7508. This is not a tuning failure, but the theoretical ceiling of the proxy label (<code>trend_pct < -20%</code>), which carries ~15-25% generative noise from seasonality and viral spikes.</li>
+                        </ul>
+                        <div style="background: rgba(239, 68, 68, 0.1); border-left: 4px solid var(--urgent); padding: 15px 20px; border-radius: 0 8px 8px 0; margin-top: 20px;">
+                            <strong>The V2 Mission:</strong> V2 is designed specifically to solve the Cold-Start problem, while laying the groundwork to solve the proxy label noise in partnership with the senior ML team.
                         </div>
                     </div>
 
                     <div class="section-block">
                         <h2>2. Proposed Architecture: The Model Cascade</h2>
-                        <p>To achieve Zero-Shot prediction, we must transition to a specialized Deep Learning pipeline that possesses an internal semantic "world model" of language, SEO, and structural patterns. To optimize for cost and speed, V2 will utilize a <strong>Router / Cascade</strong> pipeline.</p>
+                        <p>To achieve Zero-Shot prediction, V2 decouples feature extraction, heavy semantic scoring, and natural language generation into a highly efficient pipeline.</p>
                         
                         <!-- CUSTOM ARCHITECTURE DIAGRAM -->
                         <div class="v2-flowchart">
-                            <div class="flow-node node-user">User Inputs Raw URL</div>
+                            <div class="flow-node node-user">User Inputs Raw URL<br><span style="font-size: 0.85rem; font-weight: 400; opacity: 0.8;">(Zero History)</span></div>
                             
                             <div class="flow-arrow">
                                 <div class="line"></div>
@@ -233,15 +243,27 @@
                                 <div class="arrowhead"></div>
                             </div>
                             
-                            <div class="flow-node node-brain">Step 1: The "Brain"<br><span style="font-size: 0.85rem; font-weight: 400; opacity: 0.8;">Fine-Tuned LoRA (Heavy Inference)</span></div>
+                            <div class="flow-node node-crawler">The Crawler<br><span style="font-size: 0.85rem; font-weight: 400; opacity: 0.8;">Structural Extraction</span></div>
+                            
+                            <div class="flow-arrow" style="height: 80px;">
+                                <div class="line"></div>
+                                <div class="arrowhead"></div>
+                                <div class="flow-arrow-label">Extracts: Word Count, Headings, Depth, Schema</div>
+                            </div>
+                            
+                            <div class="flow-node node-brain">Step 2: The "Brain"<br><span style="font-size: 0.85rem; font-weight: 400; opacity: 0.8;">Fine-Tuned LoRA (Heavy Inference)</span></div>
+                            
+                            <div style="margin: 15px 0; color: #94a3b8; font-size: 0.85rem; text-align: center; max-width: 300px;">
+                                * If history exists, V1 XGBoost injects <code>predict_proba</code> + top SHAP signals here instead of raw tree-leaf vectors.
+                            </div>
                             
                             <div class="flow-arrow">
                                 <div class="line"></div>
                                 <div class="arrowhead"></div>
-                                <div class="flow-arrow-label">Calculates Mathematical Embeddings<br>→ Outputs Raw JSON Score</div>
+                                <div class="flow-arrow-label">Outputs Raw JSON Score</div>
                             </div>
                             
-                            <div class="flow-node node-mouth">Step 2: The "Mouth"<br><span style="font-size: 0.85rem; font-weight: 400; opacity: 0.9;">Groq LLaMA 8B Proxy (High-Speed)</span></div>
+                            <div class="flow-node node-mouth">Step 3: The "Mouth"<br><span style="font-size: 0.85rem; font-weight: 400; opacity: 0.9;">Groq LLaMA 8B Proxy (High-Speed)</span></div>
                             
                             <div class="flow-arrow">
                                 <div class="line"></div>
@@ -263,14 +285,22 @@
                             </div>
                             <div class="econ-card glass-panel">
                                 <div class="econ-val" style="color: #38bdf8;">∞</div>
-                                <p><strong>Frictionless Onboarding</strong><br>Users drop a raw URL into the UI. No Search Console connections or CSV uploads required.</p>
+                                <p><strong>Frictionless Onboarding</strong><br>Users drop a raw URL into the UI. The crawler + cascade evaluates it instantly.</p>
                             </div>
                         </div>
 
                         <ul style="margin-top: 30px; padding-left: 20px; line-height: 1.8; color: var(--text-muted);">
-                            <li><strong style="color: white;">Expanding Total Addressable Market (TAM):</strong> V1 serves enterprise clients with established datasets. V2 opens the market to small firms, solo creators, and startups who lack historical CSV data.</li>
+                            <li><strong style="color: white;">Expanding Total Addressable Market (TAM):</strong> V2 opens the market to small firms, solo creators, and startups who lack historical CSV data.</li>
                             <li><strong style="color: white;">Product-Led Growth (Freemium):</strong> The fractional unit economics unlock the financial viability of a "Free Trial" tier, massively lowering CAC.</li>
-                            <li><strong style="color: white;">Proprietary Moat:</strong> The fine-tuned LoRA weights combined with the XGBoost ensemble vectors create a highly defensible algorithm that generic wrappers cannot replicate.</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="section-block">
+                        <h2>4. Open Technical Questions (For Senior Review)</h2>
+                        <p>To move this from proposal to production, I would look to collaborate with the FlyRank ML team on two specific fronts:</p>
+                        <ul style="padding-left: 20px; line-height: 1.8; color: var(--text-muted);">
+                            <li><strong style="color: white;">Time-Series Ground Truth:</strong> Moving away from the 30-day proxy label to a true future-window outcome using the 79M row warehouse to break the 0.75 ROC-AUC ceiling.</li>
+                            <li><strong style="color: white;">Crawler Infrastructure:</strong> Defining the specific structural features (e.g., keyword density vs. semantic distance) the crawler should pass to the LoRA Brain.</li>
                         </ul>
                     </div>
 
