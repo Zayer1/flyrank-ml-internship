@@ -248,13 +248,14 @@
                             <div class="flow-arrow" style="height: 80px;">
                                 <div class="line"></div>
                                 <div class="arrowhead"></div>
-                                <div class="flow-arrow-label">Extracts: Word Count, Headings, Depth, Schema</div>
+                                <div class="flow-arrow-label">Extracts: Structural Metrics + Semantic Text</div>
                             </div>
                             
                             <div class="flow-node node-brain">Step 2: The "Brain"<br><span style="font-size: 0.85rem; font-weight: 400; opacity: 0.8;">Fine-Tuned LoRA (Heavy Inference)</span></div>
                             
                             <div style="margin: 15px 0; color: #94a3b8; font-size: 0.85rem; text-align: center; max-width: 300px;">
-                                * If history exists, V1 XGBoost injects <code>predict_proba</code> + top SHAP signals here instead of raw tree-leaf vectors.
+                                * For zero-history URLs, injects BOTH semantic text & structure.<br>
+                                * If history exists, V1 XGBoost injects <code>predict_proba</code> + top SHAP signals here.
                             </div>
                             
                             <div class="flow-arrow">

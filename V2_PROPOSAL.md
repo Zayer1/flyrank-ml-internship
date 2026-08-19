@@ -34,10 +34,13 @@ graph TD
 ```
 
 ### Step 1: The Crawler (The Cold-Start Fix)
-For URLs with no Google Search Console data, the Gateway instantly crawls the live URL to extract structural proxies for content quality: `word_count`, `heading_hierarchy`, `internal_link_count`, and `schema_markup`. 
+For URLs with no Google Search Console data, the Gateway utilizes a Managed Extraction API (e.g., Firecrawl) to instantly crawl the live URL. This outsources the heavy web-scraping infrastructure and returns a clean payload containing:
+1. **Structural Metadata:** For calculating proxies like `word_count`, `heading_hierarchy`, and `schema_markup`.
+2. **Semantic Text:** The raw, cleaned markdown of the article's actual content.
 
 ### Step 2: The "Brain" (Specialized Heavy Inference)
-A heavy open-weights model (e.g., LLaMA-3 70B) fine-tuned using **LoRA (Low-Rank Adaptation)** on tabular instruction pairs. 
+A heavy open-weights model (e.g., LLaMA-3 70B) fine-tuned using **LoRA (Low-Rank Adaptation)**. 
+- **The Zero-History Input:** The LoRA prompt is injected with BOTH the structural metrics AND the semantic text. This prevents the model from learning a flawed "longer = better" heuristic by forcing it to evaluate structural density against actual semantic quality.
 - **The V1 Handshake:** If the URL *does* have historical data, V1 is still used. Instead of injecting raw tree-leaf vectors (which lack semantic meaning to an LLM), we inject V1's `predict_proba` and top SHAP feature importances as text context.
 - **Output:** Outputs a strict, deterministic JSON object containing calculated opportunity/risk scores.
 
