@@ -4,7 +4,8 @@
 
 ## 🎓 Capstone: Predictive SEO Triage & Action Playbook
 
-The highlight of this repository is the Week 8 Capstone project. Instead of just a Jupyter notebook, this project includes a **fully deployed ML triage pipeline**, an **interactive frontend**, and a **FastAPI backend** powered by XGBoost and LLaMA 3.1.
+**What this agent does and for whom:**
+This system is an AI-powered triage agent built for content marketing teams and SEO managers. It ingests raw URL traffic data, predicts which pages are mathematically guaranteed to lose traffic using an XGBoost classifier, and generates a human-readable action playbook using a LLaMA 3.1 generative proxy so non-technical teams can intervene proactively.
 
 **Quick Links for the Evaluator:**
 1. **[The Final Paper (Live)](https://zayer1.github.io/flyrank-ml-internship)** — Hosted via GitHub Pages, serving the interactive frontend and the final write-up.
@@ -19,11 +20,22 @@ The highlight of this repository is the Week 8 Capstone project. Instead of just
 4. Start the backend: `python api/server.py`. The server will safely load the model and config at startup and expose the `/health` endpoint.
 5. The frontend will automatically pass `X-API-Key: flyrank-demo-123` to authenticate.
 
-### 🚀 Key Engineering Features
-- **XGBoost Inference Engine:** Achieved 96% Precision@50 using a GroupShuffleSplit on `client_id` to prevent data leakage across a 30,000-row dataset.
+### 🚀 Key Engineering Features & Evaluation
+- **XGBoost Inference Engine:** Achieved **96% Precision@50** using a GroupShuffleSplit on `client_id` to prevent data leakage across a 30,000-row dataset.
 - **Generative AI Proxy:** Integrated a LLaMA 3.1 chatbot to translate raw mathematical probabilities into human-readable action playbooks.
 - **API Fallback Cascade:** Architected a dynamic model fallback loop in `server.py` to silently absorb cloud provider deprecation errors (API Link Rot), guaranteeing near 100% uptime for clients.
-- **Unit Economics Strategy:** Decoupled heavy semantic inference from the fast generation proxy (detailed in the [V2 Proposal](V2_PROPOSAL.md)) to maintain costs at fractions of a cent per URL.
+
+### 🏗️ Architecture Sketch
+```mermaid
+graph TD
+    A["Raw URL Data"] --> B["FastAPI Gateway"]
+    B --> C["XGBoost ML Pipeline"]
+    C -->|"Calculates Decay Probability"| D{"LLaMA Generative Proxy"}
+    D -->|"Translates Math to Strategy"| E["Action Playbook (Client UI)"]
+```
+
+### ⚠️ Limitations (The Cold-Start Problem)
+- **Zero-History Blindness:** The strongest predictive feature in this model is 30-day historical impressions. If a client inputs a brand new URL, the history is `NaN`, and classical ML routes it to the non-declining branch by default. The V1 agent is functionally blind to zero-history content. The [V2 Proposal](V2_PROPOSAL.md) outlines the transition to a Zero-Shot architecture to solve this limitation.
 
 ---
 
