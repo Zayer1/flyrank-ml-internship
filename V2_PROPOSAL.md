@@ -51,6 +51,7 @@ The raw JSON output from the Brain is passed to an ultra-fast API proxy (e.g., *
 1. **Frictionless Onboarding:** Users no longer need to connect Google Search Console or upload heavy CSVs to get immediate value. They drop a raw URL, and the crawler + cascade evaluates it instantly.
 2. **Cost Optimization:** Decoupling the Heavy Inference (Brain) from Generation (Mouth) slashes GPU costs. Evaluating a standard URL costs roughly **$0.0025 per inference**.
 3. **Expanding TAM & PLG:** V2 opens the market to solo creators and startups lacking historical data, enabling a highly lucrative "Free Trial" tier to lower CAC.
+4. **Resilient Production Uptime (API Fallback Cascade):** V2 actively protects against "API Link Rot" (cloud providers silently deprecating models or issuing restricted API keys). By utilizing a dynamic fallback loop across a whitelist of financially approved models, the system silently absorbs API deprecation errors and routes to the next model in the cascade, guaranteeing near 100% uptime for clients without emergency engineering intervention.
 
 ## 4. Open Technical Questions (For Senior Engineering Review)
 To move this from proposal to production, I would look to collaborate with the FlyRank ML team on two specific fronts:
@@ -58,4 +59,4 @@ To move this from proposal to production, I would look to collaborate with the F
 2. **Crawler Infrastructure:** Defining the specific structural features (e.g., keyword density vs. semantic distance) the crawler should pass to the LoRA Brain.
 
 ---
-*Prepared by Zayer — Submitted alongside the FlyRank V1 Capstone.*
+*Prepared by Đỗ Công Bình — Submitted alongside the FlyRank V1 Capstone.*

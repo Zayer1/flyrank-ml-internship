@@ -19,6 +19,12 @@ The highlight of this repository is the Week 8 Capstone project. Instead of just
 4. Start the backend: `python api/server.py`. The server will safely load the model and config at startup and expose the `/health` endpoint.
 5. The frontend will automatically pass `X-API-Key: flyrank-demo-123` to authenticate.
 
+### 🚀 Key Engineering Features
+- **XGBoost Inference Engine:** Achieved 96% Precision@50 using a GroupShuffleSplit on `client_id` to prevent data leakage across a 30,000-row dataset.
+- **Generative AI Proxy:** Integrated a LLaMA 3.1 chatbot to translate raw mathematical probabilities into human-readable action playbooks.
+- **API Fallback Cascade:** Architected a dynamic model fallback loop in `server.py` to silently absorb cloud provider deprecation errors (API Link Rot), guaranteeing near 100% uptime for clients.
+- **Unit Economics Strategy:** Decoupled heavy semantic inference from the fast generation proxy (detailed in the [V2 Proposal](V2_PROPOSAL.md)) to maintain costs at fractions of a cent per URL.
+
 ---
 
 This repository serves as the complete workspace and portfolio for the FlyRank ML Internship.

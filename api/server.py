@@ -17,7 +17,7 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 
-load_dotenv()
+load_dotenv(os.path.join(os.path.dirname(__file__), '.env'))
 
 # Setup Rate Limiter
 limiter = Limiter(key_func=get_remote_address)
@@ -177,18 +177,33 @@ async def chat(request: Request, req: ChatRequest, api_key: str = Depends(get_ap
     {req.context}
     """
 
-    try:
-        response = client.chat.completions.create(
-            model='llama-3.1-8b-instant',
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": req.message}
-            ]
-        )
-        return {"response": response.choices[0].message.content}
-    except Exception as e:
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail="Internal Chat API Error")
+    models_to_try = [
+        'llama-3.3-70b-versatile',
+        'llama-3.1-8b-instant',
+        'mixtral-8x7b-32768',
+        'openai/gpt-oss-20b'
+    ]
+    
+    last_error = None
+    for model_id in models_to_try:
+        try:
+            response = client.chat.completions.create(
+                model=model_id,
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": req.message}
+                ]
+            )
+            return {"response": response.choices[0].message.content}
+        except Exception as e:
+            last_error = e
+            error_str = str(e).lower()
+            if "model_not_found" in error_str or "decommissioned" in error_str or "does not exist" in error_str or "404" in error_str:
+                continue
+            break
+            
+    traceback.print_exc()
+    raise HTTPException(status_code=500, detail=f"LLM Fallback Exhausted. Last Error: {str(last_error)}")
 
 if __name__ == "__main__":
     import uvicorn
