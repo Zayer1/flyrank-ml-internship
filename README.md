@@ -37,6 +37,9 @@ graph TD
 ### ⚠️ Limitations (The Cold-Start Problem)
 - **Zero-History Blindness:** The strongest predictive feature in this model is 30-day historical impressions. If a client inputs a brand new URL, the history is `NaN`, and classical ML routes it to the non-declining branch by default. The V1 agent is functionally blind to zero-history content. The [V2 Proposal](V2_PROPOSAL.md) outlines the transition to a Zero-Shot architecture to solve this limitation.
 
+### 🤖 AI Transparency Statement
+In adherence to the AI Fluency framework, I utilized an AI pair-programmer (Antigravity) to accelerate this capstone. Specifically, I used AI to help debug environment variable pathing in the backend and to brainstorm the logic for the dynamic model fallback cascade. However, the core XGBoost ML pipeline, the data leakage audits, and the final architectural decisions were independently verified and owned by me.
+
 ---
 
 This repository serves as the complete workspace and portfolio for the FlyRank ML Internship.
