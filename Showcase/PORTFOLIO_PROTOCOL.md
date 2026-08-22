@@ -6,7 +6,7 @@ This document serves as the permanent protocol for adding new Machine Learning c
 The next case study will be added to my live GitHub Pages portfolio (`zayer1.github.io`). It will be formatted as a standalone Markdown document and linked directly from the homepage index so recruiters can easily find it.
 
 ## 2. Steps to Add a New Case (The 3-Beat Shape)
-To prevent writer's block and keep updates cheap, I will rely on my AI coding assistant (which already knows my tone, tech stack, and identity kit) and use the strict 3-beat framework:
+To prevent writer's block and keep updates cheap, I will retain my current **Antigravity workspace** (which functions as my persistent AI project and already knows my tone, tech stack, and identity kit) so the next case is a short conversation, not a rebuild. The steps are simple:
 
 1. **The Problem:** Define the raw mathematical, data, or architectural bottleneck (e.g., "The model suffered from Zero-History Blindness on new URLs").
 2. **The Action:** Detail the specific engineering implementation (e.g., "Architected a V2 model cascade utilizing a structural web crawler and a fine-tuned LoRA model").
