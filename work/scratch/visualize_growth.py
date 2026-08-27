@@ -29,6 +29,6 @@ plt.axvline(valid['growth_pct'].quantile(0.75), color='green', linestyle='--', l
 plt.legend()
 plt.tight_layout()
 
-# Save to artifacts directory
-plt.savefig(r'C:\Users\Admin\.gemini\antigravity-ide\brain\457eb36c-14c0-4f50-b0de-fc599c5ac069\growth_distribution.png', dpi=300)
+# Save locally
+plt.savefig('growth_distribution.png', dpi=300)
 print("Visualization saved.")
