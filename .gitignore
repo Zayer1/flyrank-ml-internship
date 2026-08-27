@@ -3,7 +3,7 @@
 data/**
 !data/
 !data/raw/
-!data/raw/content_refresh_anonymized.csv
+!data/raw/dummy_data.csv
 
 # Never commit bulk dataset dumps or archives
 *.parquet

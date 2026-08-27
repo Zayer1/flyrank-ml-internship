@@ -1,29 +1,20 @@
-# FlyRank ML Internship — Capstone Project
-
-**Applied Search Intelligence: Google Search Ranking & Discoverability**
-
-## 🎓 Capstone: Predictive SEO Triage & Action Playbook
+# FlyRank SEO Triage Engine - XGBoost model achieving 95.6% P@50 with a FastAPI/LLaMA fallback integration.
 
 **What this agent does and for whom:**
 This system is an AI-powered triage agent built for content marketing teams and SEO managers. It ingests raw URL traffic data, predicts which pages are mathematically guaranteed to lose traffic using an XGBoost classifier, and generates a human-readable action playbook using a LLaMA 3.1 generative proxy so non-technical teams can intervene proactively.
 
-**Quick Links for the Evaluator:**
-1. **[The Final Paper (Live)](https://zayer1.github.io/flyrank-ml-internship)** — Hosted via GitHub Pages, serving the interactive frontend and the final write-up.
-2. **The ML Pipeline:** `work/notebooks/capstone.ipynb` (End-to-end model training, validation, and ablation studies).
-3. **The Backend API (V2 Production):** `api/server.py` (FastAPI serving the XGBoost model and LLaMA 3.1 Groq integration, with strict feature validation, rate-limiting via slowapi, and `X-API-Key` auth).
-4. **The Frontend App:** `docs/index.html` & `docs/app.js` (The deployed interactive UI).
+## Quickstart
 
-*Note to Evaluator: The live paper UI is a prototype connected to a local backend for inference. To test the file upload scoring and the triage copilot yourself:*
-1. Clone this repository.
-2. Install dependencies: `pip install -r requirements.txt` (Dependencies are strictly pinned for production reproducibility).
-3. Add a `GROQ_API_KEY` to your environment or `.env` file.
-4. Start the backend: `python api/server.py`. The server will safely load the model and config at startup and expose the `/health` endpoint.
-5. The frontend will automatically pass `X-API-Key: flyrank-demo-123` to authenticate.
+```bash
+pip install -r requirements.txt
+python api/server.py
+```
+*(The server will safely load the model and config at startup and expose the `/health` endpoint)*
 
-### 🚀 Key Engineering Features & Evaluation
-- **XGBoost Inference Engine:** Achieved **96% Precision@50** using a GroupShuffleSplit on `client_id` to prevent data leakage across a 30,000-row dataset.
-- **Generative AI Proxy:** Integrated a LLaMA 3.1 chatbot to translate raw mathematical probabilities into human-readable action playbooks.
-- **API Fallback Cascade:** Architected a dynamic model fallback loop in `server.py` to silently absorb cloud provider deprecation errors (API Link Rot), guaranteeing near 100% uptime for clients.
+## Architecture Highlights
+- **Data Leakage Prevention:** Uses `GroupShuffleSplit` on `client_id` to ensure strict separation across the 30,000-row dataset during evaluation.
+- **Handling Missingness:** Dropped sparse/noisy features like `provider_used` before training to improve robustness.
+- **Cascade Fallback Model:** Architected a dynamic model fallback loop in `server.py` to silently absorb cloud provider deprecation errors (API Link Rot), guaranteeing near 100% uptime for clients.
 
 ### 🏗️ Architecture Sketch
 ```mermaid
